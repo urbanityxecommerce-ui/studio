@@ -55,21 +55,21 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeCompetitorContentOutputSchema},
   prompt: `You are an expert SEO analyst specializing in competitor analysis for YouTube and Instagram.
 
-You cannot access external URLs. Based on the likely topic from the provided link, generate a *sample* competitor analysis. This is a simulation to show the user what a real analysis would look like.
+  IMPORTANT: You CANNOT access external URLs. Your task is to perform a realistic, high-quality *simulated* analysis.
+  
+  1.  Infer the general topic from the provided link: {{{competitorChannelOrVideoLink}}}
+  2.  Based *only on that topic*, generate a detailed, hypothetical competitor analysis. 
+  3.  Pretend you have analyzed a popular, real channel about that topic and present the findings. The data must be specific, creative, and actionable. Do not state that you are generating sample data.
 
-Analyze the topic suggested by this link: {{{competitorChannelOrVideoLink}}}
+  For example, if the link is about 'learning guitar', generate a plausible analysis for a popular guitar tutorial channel.
 
-Output a sample analysis including: top 5 competitor videos, average watch time, headline patterns, common tags, identified content gap opportunities, and recommended content angles. Be specific and provide actionable insights as if you had analyzed a real channel on that topic.
-
-Example Output Format:
-{
-  "topVideos": ["Example Video 1 on Topic", "Example Video 2 on Topic", "Example Video 3 on Topic", "Example Video 4 on Topic", "Example Video 5 on Topic"],
-  "averageWatchTime": "X minutes",
-  "headlinePatterns": ["Pattern 1 for Topic", "Pattern 2 for Topic", "Pattern 3 for Topic"],
-  "commonTags": ["TopicTag1", "TopicTag2", "TopicTag3"],
-  "gapOpportunities": ["Opportunity 1 for Topic", "Opportunity 2 for Topic", "Opportunity 3 for Topic"],
-  "contentAngles": ["Angle 1 for Topic", "Angle 2 for Topic", "Angle 3 for Topic"]
-}
+  Your analysis must include:
+  - top 5 plausible video titles
+  - a realistic average watch time
+  - common headline patterns
+  - common tags/hashtags for the topic
+  - insightful content gap opportunities
+  - creative content angles to outrank a competitor on that topic.
 `,
 });
 
