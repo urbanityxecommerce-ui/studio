@@ -1,5 +1,5 @@
 import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
-import serviceAccount from '../../../serviceAccount.json';
+import serviceAccount from '../../serviceAccount.json';
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeAdminApp(): App {
