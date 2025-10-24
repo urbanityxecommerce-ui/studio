@@ -1,5 +1,6 @@
 import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
-import serviceAccount from '../../serviceAccount.json';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeAdminApp(): App {
@@ -7,14 +8,14 @@ export function initializeAdminApp(): App {
     return getApps()[0];
   }
 
-  // Set the environment variable for Google Application Credentials
-  // This is for local development and will be overridden in a cloud environment
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    // In a real app, you'd want to handle this more securely,
-    // but for the studio environment, this is acceptable.
-    // The serviceAccount.json is a placeholder managed by the environment.
-    process.env.GOOGLE_APPLICATION_CREDENTIALS = 'serviceAccount.json';
+  // Construct an absolute path to the service account file
+  const serviceAccountPath = path.join(process.cwd(), 'serviceAccount.json');
+  
+  if (!fs.existsSync(serviceAccountPath)) {
+    throw new Error(`Could not find serviceAccount.json at path: ${serviceAccountPath}. Ensure the file exists in the project root.`);
   }
+
+  const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
   const app = initializeApp({
     credential: cert(serviceAccount),
