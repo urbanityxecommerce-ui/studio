@@ -92,13 +92,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
-  const handleUpgrade = () => {
-    const whatsappNumber = "7478802433";
-    const message = `Hi! I'm interested in upgrading to the premium monthly subscription for CreatorX SEO.\n\nI'm excited about the personalized guidance for SEO, content improvements, and custom thumbnail creation. Could you please let me know the pricing details?`;
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
-
   // Display a loading skeleton while the user state is being determined.
   if (isUserLoading || !user) {
     return (
@@ -154,10 +147,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
 
         <SidebarContent className="p-2">
-            <div className="p-2 group-data-[collapsible=icon]:p-0">
-                <Button onClick={handleUpgrade} size="sm" className="w-full">
-                    <Zap className="mr-2 h-4 w-4" />
-                    <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
+             <div className="p-2 group-data-[collapsible=icon]:p-0">
+                <Button asChild size="sm" className="w-full">
+                    <Link href="/upgrade">
+                        <Zap className="mr-2 h-4 w-4" />
+                        <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
+                    </Link>
                 </Button>
             </div>
            <SidebarMenu>
@@ -219,6 +214,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/settings">
                     <Settings className="mr-2" />
                     <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                  <Link href="/upgrade">
+                    <Zap className="mr-2" />
+                    <span>Upgrade</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
