@@ -25,10 +25,6 @@ export default function HelpClient() {
       answer: "You'll need a link to a competitor's YouTube channel or one of their specific videos. The tool will then analyze their content to show you their top videos, common headline patterns, and suggest ways you can create better content to compete.",
     },
     {
-      question: "Why do I need a YouTube API Key for Competitor Analysis?",
-      answer: "To get real, up-to-date information about a competitor's channel (like their most popular videos and tags), the app needs to ask YouTube for that data. The API key is a free, secure way to prove to YouTube that our app has permission to request that public information.",
-    },
-    {
       question: "How does the Thumbnail Optimizer work?",
       answer: "Just upload the thumbnail image you've created and enter your video title. The AI will analyze it based on design principles that lead to higher click-through rates (CTR). It will give you a score and actionable advice on how to improve things like text readability, colors, and subject focus.",
     },
