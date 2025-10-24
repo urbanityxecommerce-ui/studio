@@ -13,24 +13,36 @@ import { HelpCircle } from "lucide-react";
 export default function HelpClient() {
   const faqs = [
     {
-      question: "How do I get a YouTube API Key?",
-      answer: "You can get a YouTube Data API v3 key from the Google Cloud Console. You will need to create a project, enable the 'YouTube Data API v3' service, and then create credentials to get an API key. Make sure the key has the correct permissions to access YouTube data.",
+      question: "What is the Content Ideas feature for?",
+      answer: "This is your personal brainstorming partner! Just tell it a topic, who you're trying to reach, and the style you want, and it will generate 5 complete video/content ideas for you, including catchy titles, viral hooks, and even thumbnail concepts.",
     },
     {
-        question: "Why does the Competitor Analysis feature say my API key is invalid?",
-        answer: "This can happen for a few reasons: the key might be incorrect, it might not have the YouTube Data API v3 enabled, or its daily quota might be exceeded. Please double-check your key and its settings in the Google Cloud Console."
+        question: "How does Keyword Research work?",
+        answer: "Enter any topic, and the AI will provide you with a list of 10 related keywords. It also gives you an estimate of how many people search for that keyword each month and how difficult it might be to rank for, helping you choose the best keywords to target."
     },
     {
-      question: "Is the Rank Tracker data real-time?",
-      answer: "No, the Rank Tracker currently provides a realistic simulation of ranking data. Since accessing live Google search results is complex, this feature is designed to give you a powerful example of a rank report. We are working on launching real-time tracking soon!",
+      question: "What do I need for the Competitor Analysis feature?",
+      answer: "You'll need a link to a competitor's YouTube channel or one of their specific videos. The tool will then analyze their content to show you their top videos, common headline patterns, and suggest ways you can create better content to compete.",
     },
     {
-      question: "Where can I suggest a new feature?",
-      answer: "We'd love to hear your ideas! Please use the 'Feedback' page, accessible from the bottom of the sidebar navigation, to send us your suggestions via WhatsApp or Email.",
+      question: "Why do I need a YouTube API Key for Competitor Analysis?",
+      answer: "To get real, up-to-date information about a competitor's channel (like their most popular videos and tags), the app needs to ask YouTube for that data. The API key is a free, secure way to prove to YouTube that our app has permission to request that public information.",
     },
     {
-        question: "Why do the AI-generated ideas sometimes feel generic?",
-        answer: "The quality of AI generation depends heavily on the input you provide. Try to be as specific as possible with the category, subcategory, and target audience to get more unique and tailored content ideas."
+      question: "How does the Thumbnail Optimizer work?",
+      answer: "Just upload the thumbnail image you've created and enter your video title. The AI will analyze it based on design principles that lead to higher click-through rates (CTR). It will give you a score and actionable advice on how to improve things like text readability, colors, and subject focus.",
+    },
+    {
+        question: "Is the Rank Tracker data real-time from Google?",
+        answer: "Currently, the Rank Tracker provides a realistic *simulation* of ranking data. Since accessing live Google search results is complex and costly, this feature is designed to give you a powerful example of what a rank report looks like. We are working hard on launching real-time tracking soon, and your support helps us get there faster!"
+    },
+    {
+        question: "The AI-generated ideas or captions feel a bit generic. How can I improve them?",
+        answer: "The quality of AI generation depends heavily on the quality of your input. To get more unique and tailored results, try to be as specific as possible in the forms. For example, instead of 'Tech' for Content Ideas, try something more specific like 'Beginner tips for iPhone 15 camera'."
+    },
+    {
+      question: "Where can I suggest a new feature or report a problem?",
+      answer: "We'd love to hear from you! Please use the 'Feedback' page, accessible from the bottom of the sidebar navigation, to send us your ideas or report any issues. Your feedback is crucial for making the app better.",
     }
   ];
 
