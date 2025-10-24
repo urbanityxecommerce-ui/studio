@@ -149,6 +149,26 @@ export default function ContentIdeasClient() {
                         <SelectItem value="Finance">Finance</SelectItem>
                         <SelectItem value="Gaming">Gaming</SelectItem>
                         <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                        <SelectItem value="Food & Cooking">Food & Cooking</SelectItem>
+                        <SelectItem value="Travel">Travel</SelectItem>
+                        <SelectItem value="Health & Fitness">Health & Fitness</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="DIY & Crafts">DIY & Crafts</SelectItem>
+                        <SelectItem value="Fashion">Fashion</SelectItem>
+                        <SelectItem value="Music">Music</SelectItem>
+                        <SelectItem value="Movies & TV Shows">Movies & TV Shows</SelectItem>
+                        <SelectItem value="Books & Writing">Books & Writing</SelectItem>
+                        <SelectItem value="Business & Entrepreneurship">Business & Entrepreneurship</SelectItem>
+                        <SelectItem value="Science">Science</SelectItem>
+                        <SelectItem value="History & Culture">History & Culture</SelectItem>
+                        <SelectItem value="Cars & Vehicles">Cars & Vehicles</SelectItem>
+                        <SelectItem value="Sports">Sports</SelectItem>
+                        <SelectItem value="Pets & Animals">Pets & Animals</SelectItem>
+                        <SelectItem value="Parenting & Family">Parenting & Family</SelectItem>
+                        <SelectItem value="Home & Garden">Home & Garden</SelectItem>
+                        <SelectItem value="Comedy">Comedy</SelectItem>
+                        <SelectItem value="Vlogging">Vlogging</SelectItem>
+                        <SelectItem value="Dark Psychology">Dark Psychology</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
