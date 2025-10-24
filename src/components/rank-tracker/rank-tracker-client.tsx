@@ -89,7 +89,7 @@ export default function RankTrackerClient() {
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Rank Tracker</h1>
         <p className="text-muted-foreground">
-          Monitor your keyword rankings over time with simulated data.
+          Monitor your keyword rankings over time with simulated data. Real-time rank tracking is coming soon! Your support will help us launch it faster.
         </p>
       </header>
 
