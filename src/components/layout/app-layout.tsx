@@ -8,13 +8,13 @@ import {
   HelpCircle,
   Image,
   Lightbulb,
+  LogOut,
   MessageSquare,
   Repeat,
   Search,
   Settings,
+  Shield,
   Users,
-  LogOut,
-  ChevronRight,
   Zap,
   Film,
 } from "lucide-react";
@@ -32,7 +32,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth, useUser } from "@/firebase";
+import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +45,8 @@ import { Skeleton } from "../ui/skeleton";
 import React from "react";
 import ClientOnly from "../client-only";
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { doc } from "firebase/firestore";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -64,13 +66,20 @@ const bottomNavItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isMobile } = useSidebar();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [firestore, user]
+  );
+  const { data: userData } = useDoc<{ plan?: string }>(userDocRef);
+
+  const isAdmin = user?.uid === process.env.NEXT_PUBLIC_ADMIN_UID;
 
   React.useEffect(() => {
-    // Only redirect if authentication has finished loading and there's no user.
     if (!isUserLoading && !user) {
       router.push('/login');
     }
@@ -83,16 +92,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     await auth.signOut();
-    // Invalidate session cookie by calling our API endpoint
     await fetch('/api/auth/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: '' }), // Sending empty token to signal logout
+      body: JSON.stringify({ idToken: '' }),
     });
     router.push('/login');
   };
 
-  // Display a loading skeleton while the user state is being determined.
   if (isUserLoading || !user) {
     return (
        <div className="flex h-screen w-full items-center justify-center">
@@ -115,6 +122,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <AvatarFallback>{user?.email?.[0].toUpperCase() || 'U'}</AvatarFallback>
       </Avatar>
     )
+  };
+
+  const PlanBadge = () => {
+    if (!userData?.plan || userData.plan === 'free') return null;
+    return <Badge variant={userData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{userData.plan}</Badge>;
   }
 
   return (
@@ -128,6 +140,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
 
         <SidebarContent className="flex-1 p-2">
+          <div className="p-2 group-data-[collapsible=icon]:p-0">
+            <Button asChild size="sm" className="w-full">
+              <Link href="/upgrade">
+                <Zap className="mr-2 h-4 w-4" />
+                <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
+              </Link>
+            </Button>
+          </div>
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
@@ -147,15 +167,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
 
         <SidebarContent className="p-2">
-             <div className="p-2 group-data-[collapsible=icon]:p-0">
-                <Button asChild size="sm" className="w-full">
-                    <Link href="/upgrade">
-                        <Zap className="mr-2 h-4 w-4" />
-                        <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
-                    </Link>
-                </Button>
-            </div>
            <SidebarMenu>
+            {isAdmin && (
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={isActive('/admin')} tooltip={{ children: 'Admin Panel' }}>
+                  <Link href="/admin">
+                    <Shield />
+                    <span>Admin Panel</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
             {bottomNavItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={{ children: item.label }}>
@@ -177,7 +199,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuContent className="mb-2 w-56">
                       <DropdownMenuLabel>My Account</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem className="flex justify-between">
+                        <span>Profile</span>
+                        <PlanBadge />
+                      </DropdownMenuItem>
                        <DropdownMenuItem>Billing</DropdownMenuItem>
                       <DropdownMenuItem>Team</DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -210,11 +235,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
+                <DropdownMenuItem className="flex justify-between">
+                   <Link href="/settings" className="flex items-center">
                     <Settings className="mr-2" />
                     <span>Settings</span>
                   </Link>
+                   <PlanBadge />
                 </DropdownMenuItem>
                  <DropdownMenuItem asChild>
                   <Link href="/upgrade">

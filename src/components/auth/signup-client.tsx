@@ -84,6 +84,7 @@ export default function SignupClient() {
       lastName: data.lastName,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+      plan: 'free',
     };
     setDocumentNonBlocking(userRef, userData, { merge: true });
   }

@@ -37,6 +37,11 @@
         "subscriptionId": {
           "type": "string",
           "description": "Reference to Subscription. (Relationship: User 1:1 Subscription)"
+        },
+        "plan": {
+          "type": "string",
+          "description": "The user's current subscription plan.",
+          "enum": ["free", "starter", "pro"]
         }
       },
       "required": [
