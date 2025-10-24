@@ -51,7 +51,6 @@ const navItems = [
   { href: "/rank-tracker", label: "Rank Tracker", icon: BarChart },
   { href: "/reel-seo", label: "Reel SEO", icon: Film },
   { href: "/repurposing", label: "Repurposing", icon: Repeat },
-  { href: "/planner", label: "Planner", icon: Calendar },
 ];
 
 const bottomNavItems = [
