@@ -31,7 +31,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const WHATSAPP_NUMBER = "9155595647";
+const WHATSAPP_NUMBER = "7478802433";
 const EMAIL_ADDRESS = "biznessindia@gmail.com";
 
 export default function FeedbackClient() {
