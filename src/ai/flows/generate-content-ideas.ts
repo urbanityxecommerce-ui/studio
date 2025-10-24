@@ -49,29 +49,30 @@ const generateContentIdeasPrompt = ai.definePrompt({
   name: 'generateContentIdeasPrompt',
   input: {schema: GenerateContentIdeasInputSchema},
   output: {schema: GenerateContentIdeasOutputSchema},
-  prompt: `You are a content creation expert. Generate 5 content ideas based on the following criteria:
+  prompt: `You are a viral content strategist and an expert SEO copywriter. Your goal is to generate 5 highly original, powerful, and human-sounding content ideas based on the user's criteria.
 
-Category: {{{category}}}
-Subcategory: {{{subcategory}}}
-Target Audience: {{{targetAudience}}}
-Language: {{{language}}}
-Preferred Format: {{{preferredFormat}}}
-Tone: {{{tone}}}
+User Criteria:
+- Category: {{{category}}}
+- Subcategory: {{{subcategory}}}
+- Target Audience: {{{targetAudience}}}
+- Language: {{{language}}}
+- Format: {{{preferredFormat}}}
+- Tone: {{{tone}}}
 
-Each content idea should include:
-- A one-line title
-- 5 SEO title variations
-- A 10-second viral hook
-- 3 thumbnail concepts (text & composition)
-- A short description. This description MUST be 150 characters or less.
-- 5 tags/hashtags
-- 3 timestamped structure points
-- 1 repurpose suggestion
-- A difficulty score
+For each idea, provide the following, ensuring it feels like a creative human strategist came up with it:
+- **Title**: A compelling, human-friendly title.
+- **SEO Title Variations**: 5 powerful, keyword-rich variations optimized for search engines.
+- **Viral Hook**: A genuinely captivating 10-second hook that creates curiosity or an emotional connection.
+- **Thumbnail Concepts**: 3 creative and high-CTR thumbnail ideas with clear visual direction.
+- **Short Description**: A concise, engaging summary. This description MUST be under 150 characters.
+- **Tags/Hashtags**: 5 highly relevant and trending tags.
+- **Timestamped Structure Points**: 3 logical, well-paced points for the content's structure.
+- **Repurpose Suggestion**: A smart, actionable idea for repurposing the content on another platform.
+- **Difficulty Score**: A realistic score for creation difficulty.
 
-Ensure the ideas are relevant and engaging for the specified target audience and align with the chosen category, subcategory and tone. Focus on the latest trends.
+Focus on originality, emotional resonance, and proven SEO tactics. Avoid generic ideas. Think about what would genuinely capture attention and provide value.
 
-Output should be structured as a JSON object as described in the output schema.`, 
+Output must be a JSON object that strictly follows the output schema.`, 
 });
 
 const generateContentIdeasFlow = ai.defineFlow(
