@@ -1,1 +1,8 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/repurpose-long-videos.ts';
+import '@/ai/flows/analyze-competitor-content.ts';
+import '@/ai/flows/optimize-video-thumbnails.ts';
+import '@/ai/flows/generate-reel-captions.ts';
+import '@/ai/flows/generate-content-ideas.ts';
