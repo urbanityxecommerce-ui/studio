@@ -49,6 +49,19 @@ function getApiErrorMessage(error: any): string {
     if (error.errors && Array.isArray(error.errors) && error.errors.length > 0) {
         return error.errors[0].message;
     }
+    // New check for a different error structure
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+        const message = (error as any).message;
+        // The message might be a JSON string, so let's try to parse it.
+        try {
+            const parsed = JSON.parse(message);
+            if(parsed.error?.message) return parsed.error.message;
+        } catch (e) {
+            // Not a JSON string, so return the message as is.
+            if (message.includes('invalid API key')) return 'The provided YouTube API Key is invalid.';
+            return message;
+        }
+    }
     return 'Check your YouTube API key and permissions.';
 }
 
