@@ -55,20 +55,20 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeCompetitorContentOutputSchema},
   prompt: `You are an expert SEO analyst specializing in competitor analysis for YouTube and Instagram.
 
-You will analyze the competitor's content and identify gaps and opportunities for the user to outrank them.
+You cannot access external URLs. Based on the likely topic from the provided link, generate a *sample* competitor analysis. This is a simulation to show the user what a real analysis would look like.
 
-Analyze the following competitor channel or video link: {{{competitorChannelOrVideoLink}}}
+Analyze the topic suggested by this link: {{{competitorChannelOrVideoLink}}}
 
-Output the top 5 competitor videos, average watch time, headline patterns, common tags, identified content gap opportunities, and recommended content angles to outrank the competitor. Be specific and provide actionable insights.
+Output a sample analysis including: top 5 competitor videos, average watch time, headline patterns, common tags, identified content gap opportunities, and recommended content angles. Be specific and provide actionable insights as if you had analyzed a real channel on that topic.
 
 Example Output Format:
 {
-  "topVideos": ["Video 1", "Video 2", "Video 3", "Video 4", "Video 5"],
+  "topVideos": ["Example Video 1 on Topic", "Example Video 2 on Topic", "Example Video 3 on Topic", "Example Video 4 on Topic", "Example Video 5 on Topic"],
   "averageWatchTime": "X minutes",
-  "headlinePatterns": ["Pattern 1", "Pattern 2", "Pattern 3"],
-  "commonTags": ["Tag 1", "Tag 2", "Tag 3"],
-  "gapOpportunities": ["Opportunity 1", "Opportunity 2", "Opportunity 3"],
-  "contentAngles": ["Angle 1", "Angle 2", "Angle 3"]
+  "headlinePatterns": ["Pattern 1 for Topic", "Pattern 2 for Topic", "Pattern 3 for Topic"],
+  "commonTags": ["TopicTag1", "TopicTag2", "TopicTag3"],
+  "gapOpportunities": ["Opportunity 1 for Topic", "Opportunity 2 for Topic", "Opportunity 3 for Topic"],
+  "contentAngles": ["Angle 1 for Topic", "Angle 2 for Topic", "Angle 3 for Topic"]
 }
 `,
 });
