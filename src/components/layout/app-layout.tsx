@@ -64,6 +64,8 @@ const bottomNavItems = [
   { href: "/help", label: "Help", icon: HelpCircle },
 ];
 
+const ADMIN_UID = "iAZH63A65dQrJg4pXOrsyn9ZXwH2";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, isUserLoading } = useUser();
@@ -77,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   );
   const { data: userData } = useDoc<{ plan?: string }>(userDocRef);
 
-  const isAdmin = user?.uid === process.env.NEXT_PUBLIC_ADMIN_UID;
+  const isAdmin = user?.uid === ADMIN_UID;
 
   React.useEffect(() => {
     if (!isUserLoading && !user) {
