@@ -49,7 +49,7 @@ const searchKeywordsFlow = ai.defineFlow(
   {
     name: 'searchKeywordsFlow',
     inputSchema: SearchKeywordsInputSchema,
-    outputSchema: SearchKeywordsTOutputSchema,
+    outputSchema: SearchKeywordsOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
