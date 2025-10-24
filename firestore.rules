@@ -1,68 +1,73 @@
 /**
- * @file Firebase Security Rules for CreatorX SEO Platform
+ * @fileoverview Firestore Security Rules for CreatorX SEO Platform
  *
- * @core_philosophy This ruleset enforces a strict user-ownership model for personal data nested under `/users/{userId}` and provides public read access to a few collections of non-sensitive data. It also protects data consistency by enforcing immutable owner fields on updates.
- * @data_structure Data is organized hierarchically:
- *   - `/users/{userId}`: Stores user profile information.
- *   - `/users/{userId}/channelAccounts/{channelAccountId}`: Stores channel accounts linked to a user.
- *   - `/users/{userId}/contentIdeas/{contentIdeaId}`: Stores content ideas created by a user.
- *   - `/users/{userId}/whatsAppSessions/{sessionId}`: Stores WhatsApp session data for a user.
- *   - `/channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}`: Stores video metrics associated with a channel account.
- *   - `/trendEvents/{trendEventId}`: Stores trending events (publicly readable).
- *   - `/subscriptions/{subscriptionId}`: Stores subscription data.
- *   - `/keywords/{keywordId}`: Stores keyword data (publicly readable).
- *   - `/competitors/{competitorId}`: Stores competitor data (publicly readable).
- * @key_security_decisions
- *   - User data is strictly owned and controlled by the authenticated user.
- *   - Public collections (`trendEvents`, `keywords`, `competitors`) are readable by all.
- *   - Data consistency is enforced by validating owner fields on `create` and ensuring immutability on `update`.
- *   - Listing of collections under `/users/{userId}` is restricted to the owning user.
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for private data while allowing public read access to shared data.
+ * Data is organized to ensure authorization decisions can be made based on the path and the user's authentication state,
+ * minimizing the need for complex data lookups or filtering.
+ *
+ * Data Structure:
+ * - User-specific data (channel accounts, content ideas, WhatsApp sessions) is nested under `/users/{userId}`.
+ * - Public data (trend events, keywords, competitors) is stored in top-level collections.
+ *
+ * Key Security Decisions:
+ * - User-owned data (ChannelAccounts, ContentIdeas, WhatsAppSessions) are stored under `/users/{userId}` to simplify ownership-based security rules.
+ * - Public data (TrendEvents, Keywords, Competitors) is stored in top-level collections, allowing secure list operations without complex filtering logic in security rules.
+ * - The rules explicitly deny listing the `/users` collection.
+ *
+ * Denormalization for Authorization:
+ *  - The data structure itself acts as denormalization. The `userId` is implicit in the path, making authorization checks straightforward.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows users to manage their own profile data.
+     * @description Checks if the request is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user ID matches the provided user ID.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the existing document.
+     */
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user creates their own profile with matching userId: `request.auth.uid == 'user_abc'` and `request.resource.data.id == 'user_abc'`.
-     * @allow (get, update, delete) - Authenticated user reads, updates, or deletes their own profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @deny (create) - Authenticated user attempts to create a profile for a different user: `request.auth.uid == 'user_abc'` but `request.resource.data.id == 'user_xyz'`.
-     * @deny (update, delete) - Authenticated user attempts to update or delete another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @principle Enforces document ownership and validates relational integrity.
+     * @allow (create) - Authenticated user with ID matching the userId path can create their user document.
+     * @allow (get, update, delete) - Authenticated user with ID matching the userId path can read, update, or delete their user document.
+     * @deny (create) - Authenticated user cannot create a user document for another user.
+     * @deny (get, update, delete) - Authenticated user cannot read, update, or delete another user's document.
+     * @principle Enforces document ownership and prevents unauthorized access to user profiles.
      */
     match /users/{userId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
       allow get: if isOwner(userId);
-      allow list: if false;
+      allow list: if false; // Listing all users is disallowed.
       allow create: if isOwner(userId) && request.resource.data.id == userId;
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Allows users to manage their own channel accounts.
+     * @description Rules for the /users/{userId}/channelAccounts/{channelAccountId} collection.
      * @path /users/{userId}/channelAccounts/{channelAccountId}
-     * @allow (create) - Authenticated user creates a channel account under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @allow (get, list, update, delete) - Authenticated user reads, lists, updates, or deletes a channel account under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @deny (create) - Authenticated user attempts to create a channel account under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @deny (update, delete) - Authenticated user attempts to update or delete a channel account under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @principle Enforces document ownership via path and requires user authentication.
+     * @allow (create, get, list, update, delete) - Authenticated user with ID matching the userId path can manage their channel accounts.
+     * @deny (create, get, list, update, delete) - Authenticated user cannot manage channel accounts for another user.
+     * @principle Enforces document ownership for channel accounts.
      */
     match /users/{userId}/channelAccounts/{channelAccountId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-       function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
       allow create: if isOwner(userId);
@@ -71,22 +76,13 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows users to manage their own content ideas.
+     * @description Rules for the /users/{userId}/contentIdeas/{contentIdeaId} collection.
      * @path /users/{userId}/contentIdeas/{contentIdeaId}
-     * @allow (create) - Authenticated user creates a content idea under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @allow (get, list, update, delete) - Authenticated user reads, lists, updates, or deletes a content idea under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @deny (create) - Authenticated user attempts to create a content idea under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @deny (update, delete) - Authenticated user attempts to update or delete a content idea under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @principle Enforces document ownership via path and requires user authentication.
+     * @allow (create, get, list, update, delete) - Authenticated user with ID matching the userId path can manage their content ideas.
+     * @deny (create, get, list, update, delete) - Authenticated user cannot manage content ideas for another user.
+     * @principle Enforces document ownership for content ideas.
      */
     match /users/{userId}/contentIdeas/{contentIdeaId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-       function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
       allow create: if isOwner(userId);
@@ -95,22 +91,13 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows users to manage their own WhatsApp sessions.
+     * @description Rules for the /users/{userId}/whatsAppSessions/{sessionId} collection.
      * @path /users/{userId}/whatsAppSessions/{sessionId}
-     * @allow (create) - Authenticated user creates a WhatsApp session under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @allow (get, list, update, delete) - Authenticated user reads, lists, updates, or deletes a WhatsApp session under their profile: `request.auth.uid == 'user_abc'` where `userId` in the path is `user_abc`.
-     * @deny (create) - Authenticated user attempts to create a WhatsApp session under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @deny (update, delete) - Authenticated user attempts to update or delete a WhatsApp session under another user's profile: `request.auth.uid == 'user_abc'` but the `userId` in the path is `user_xyz`.
-     * @principle Enforces document ownership via path and requires user authentication.
+     * @allow (create, get, list, update, delete) - Authenticated user with ID matching the userId path can manage their WhatsApp sessions.
+     * @deny (create, get, list, update, delete) - Authenticated user cannot manage WhatsApp sessions for another user.
+     * @principle Enforces document ownership for WhatsApp sessions.
      */
     match /users/{userId}/whatsAppSessions/{sessionId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-       function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
       allow create: if isOwner(userId);
@@ -119,80 +106,77 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows anyone to read trending events; write operations are disallowed.
+     * @description Rules for the /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} collection.
+     * @path /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}
+     * @allow (create, get, list, update, delete) - Only the owner of the ChannelAccount can manage video metrics
+     * @principle Enforces document ownership for video metrics via a parent lookup.
+     */
+    match /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} {
+        allow get: if get(/databases/$(database)/documents/channelAccounts/$(channelAccountId)).data.userId == request.auth.uid;
+        allow list: if get(/databases/$(database)/documents/channelAccounts/$(channelAccountId)).data.userId == request.auth.uid;
+        allow create: if get(/databases/$(database)/documents/channelAccounts/$(channelAccountId)).data.userId == request.auth.uid;
+        allow update: if get(/databases/$(database)/documents/channelAccounts/$(channelAccountId)).data.userId == request.auth.uid && resource != null;
+        allow delete: if get(/databases/$(database)/documents/channelAccounts/$(channelAccountId)).data.userId == request.auth.uid && resource != null;
+    }
+
+    /**
+     * @description Rules for the /trendEvents/{trendEventId} collection.
      * @path /trendEvents/{trendEventId}
-     * @allow (get, list) - Any user, authenticated or not, can read trending events.
-     * @deny (create, update, delete) - No one can create, update, or delete a trending event via the client.
-     * @principle Public read access with restricted write access.
+     * @allow (get, list) - Public read access to trend events.
+     * @deny (create, update, delete) - Only authorized admin can write trend events.
+     * @principle Allows public read access to trending events, while restricting write access.
      */
     match /trendEvents/{trendEventId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow create: if false; // TODO: Add admin role check for write access
+      allow update: if false; // TODO: Add admin role check for write access
+      allow delete: if false; // TODO: Add admin role check for write access
     }
 
-     /**
-     * @description Allows anyone to read keyword data; write operations are disallowed.
+    /**
+     * @description Rules for the /subscriptions/{subscriptionId} collection.
+     * @path /subscriptions/{subscriptionId}
+     * @allow (get, list) - Public read access to subscriptions.
+     * @deny (create, update, delete) - Only authorized admin can write subscription.
+     * @principle Allows public read access to subscriptions, while restricting write access.
+     */
+    match /subscriptions/{subscriptionId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false; // TODO: Add admin role check for write access
+      allow update: if false; // TODO: Add admin role check for write access
+      allow delete: if false; // TODO: Add admin role check for write access
+    }
+
+    /**
+     * @description Rules for the /keywords/{keywordId} collection.
      * @path /keywords/{keywordId}
-     * @allow (get, list) - Any user, authenticated or not, can read keywords.
-     * @deny (create, update, delete) - No one can create, update, or delete a keyword via the client.
-     * @principle Public read access with restricted write access.
+     * @allow (get, list) - Public read access to keywords.
+     * @deny (create, update, delete) - Only authorized admin can write keyword.
+     * @principle Allows public read access to keywords, while restricting write access.
      */
     match /keywords/{keywordId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow create: if false; // TODO: Add admin role check for write access
+      allow update: if false; // TODO: Add admin role check for write access
+      allow delete: if false; // TODO: Add admin role check for write access
     }
 
     /**
-     * @description Allows anyone to read competitor data; write operations are disallowed.
+     * @description Rules for the /competitors/{competitorId} collection.
      * @path /competitors/{competitorId}
-     * @allow (get, list) - Any user, authenticated or not, can read competitor data.
-     * @deny (create, update, delete) - No one can create, update, or delete a competitor via the client.
-     * @principle Public read access with restricted write access.
+     * @allow (get, list) - Public read access to competitors.
+     * @deny (create, update, delete) - Only authorized admin can write competitor.
+     * @principle Allows public read access to competitors, while restricting write access.
      */
     match /competitors/{competitorId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-    }
-
-   /**
-     * @description Allows management of video metrics associated with a channel account.
-     *  No ownership is enforced here, so access is completely disallowed.
-     *  The data model is incomplete, therefore rules are unsafe.
-     * @path /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}
-     * @deny (get, list, create, update, delete) - All operations are denied due to missing ownership/authorization logic.
-     * @principle: Deny all access until authorization is defined
-     */
-    match /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} {
-        allow get: if false;
-        allow list: if false;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
-    }
-
-    /**
-     * @description Allows management of subscription data.
-     * No ownership is enforced here, so access is completely disallowed.
-     * The data model is incomplete, therefore rules are unsafe.
-     * @path /subscriptions/{subscriptionId}
-     * @deny (get, list, create, update, delete) - All operations are denied due to missing ownership/authorization logic.
-     * @principle: Deny all access until authorization is defined
-     */
-    match /subscriptions/{subscriptionId} {
-        allow get: if false;
-        allow list: if false;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+      allow create: if false; // TODO: Add admin role check for write access
+      allow update: if false; // TODO: Add admin role check for write access
+      allow delete: if false; // TODO: Add admin role check for write access
     }
   }
 }
