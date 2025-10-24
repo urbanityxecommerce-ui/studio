@@ -42,6 +42,16 @@ function extractChannelId(url: string) {
     return null;
 }
 
+function getApiErrorMessage(error: any): string {
+    if (error.response?.data?.error?.message) {
+        return error.response.data.error.message;
+    }
+    if (error.errors && Array.isArray(error.errors) && error.errors.length > 0) {
+        return error.errors[0].message;
+    }
+    return 'Check your YouTube API key and permissions.';
+}
+
 
 export const getYoutubeChannelAndVideoDetails = ai.defineTool(
   {
@@ -68,7 +78,7 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
             }
         } catch (error: any) {
             console.error('Error fetching video details:', error);
-            const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+            const detail = getApiErrorMessage(error);
             throw new Error(`Failed to retrieve video details from YouTube API: ${detail}`);
         }
     } else {
@@ -89,7 +99,7 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
                     }
                 } catch(error: any) {
                     console.error('Error fetching channel details by username:', error);
-                    const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+                    const detail = getApiErrorMessage(error);
                     throw new Error(`Failed to retrieve channel details by username from YouTube API: ${detail}`);
                 }
             }
@@ -142,7 +152,7 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
         return { videoTitles, videoTags: Array.from(new Set(allTags)) }; // Return unique tags
     } catch (error: any) {
       console.error('Error fetching data from YouTube API:', error);
-      const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+      const detail = getApiErrorMessage(error);
       throw new Error(`An error occurred while fetching data from the YouTube API: ${detail}`);
     }
   }
