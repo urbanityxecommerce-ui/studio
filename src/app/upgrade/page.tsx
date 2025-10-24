@@ -19,10 +19,9 @@ const proBenefits = [
 ];
 
 const starterBenefits = [
-    "1-on-1 WhatsApp Guidance (Bi-Weekly Check-in)",
-    "Thumbnail Reviews (Up to 2 per month)",
-    "AI-Powered Content Ideas",
-    "Keyword Research & Competitor Analysis",
+    "Personalized WhatsApp guidance for improvements",
+    "Limited custom services (e.g., thumbnails, scripts)",
+    "AI-Powered Content Ideas & SEO Tools",
     "Standard Email Support",
 ];
 
@@ -92,7 +91,7 @@ export default function UpgradePage() {
                     <Card className="flex flex-col text-left shadow-lg">
                         <CardHeader>
                             <CardTitle className="text-2xl">Starter Plan</CardTitle>
-                            <CardDescription>Essential tools for new creators.</CardDescription>
+                            <CardDescription>Essential tools & guidance for new creators.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6 flex-grow">
                              <div className="text-left pt-4">
@@ -101,8 +100,8 @@ export default function UpgradePage() {
                             </div>
                             <div className="space-y-3">
                                 {starterBenefits.map((benefit, index) => (
-                                    <div key={index} className="flex items-center gap-3">
-                                        <CheckCircle className="h-5 w-5 text-green-500" />
+                                    <div key={index} className="flex items-start gap-3">
+                                        <CheckCircle className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
                                         <span className="text-foreground">{benefit}</span>
                                     </div>
                                 ))}
@@ -128,8 +127,8 @@ export default function UpgradePage() {
                             </div>
                             <div className="space-y-3">
                                 {proBenefits.map((benefit, index) => (
-                                    <div key={index} className="flex items-center gap-3">
-                                        <CheckCircle className="h-5 w-5 text-green-500" />
+                                    <div key={index} className="flex items-start gap-3">
+                                        <CheckCircle className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
                                         <span className="text-foreground">{benefit}</span>
                                     </div>
                                 ))}
