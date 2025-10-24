@@ -71,22 +71,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={
-                      item.href === "/content-ideas"
-                        ? isContentIdeasActive
-                        : isActive(item.href)
-                    }
-                    tooltip={{ children: item.label }}
-                  >
-                    <a>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </Link>
+                <SidebarMenuButton
+                  asChild
+                  isActive={
+                    item.href === "/content-ideas"
+                      ? isContentIdeasActive
+                      : isActive(item.href)
+                  }
+                  tooltip={{ children: item.label }}
+                >
+                  <Link href={item.href}>
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -96,14 +94,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
            <SidebarMenu>
             {bottomNavItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
                   <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={{ children: item.label }}>
-                    <a>
+                    <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
-                </Link>
               </SidebarMenuItem>
             ))}
              <SidebarMenuItem>
