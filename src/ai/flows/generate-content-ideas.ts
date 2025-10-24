@@ -83,6 +83,18 @@ const generateContentIdeasFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await generateContentIdeasPrompt(input);
-    return output!;
+    
+    if (!output) {
+      throw new Error("Failed to generate ideas. The output was empty.");
+    }
+
+    // Ensure descriptions don't exceed the character limit.
+    output.ideas.forEach(idea => {
+      if (idea.shortDescription.length > 150) {
+        idea.shortDescription = idea.shortDescription.substring(0, 150);
+      }
+    });
+
+    return output;
   }
 );
