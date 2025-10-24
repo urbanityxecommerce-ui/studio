@@ -9,8 +9,15 @@ if (!getApps().length) {
 export async function POST(request: NextRequest) {
   const { idToken } = await request.json();
 
+  // If there's no ID token, we're logging out. Clear the cookie.
   if (!idToken) {
-    return NextResponse.json({ error: 'idToken is required' }, { status: 400 });
+    const response = NextResponse.json({ status: 'logged out' });
+    response.cookies.set({
+      name: '__session',
+      value: '',
+      maxAge: -1, // Expire the cookie immediately
+    });
+    return response;
   }
 
   // Set session expiration to 5 days.

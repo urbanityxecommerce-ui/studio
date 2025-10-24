@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart,
   Calendar,
@@ -42,6 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Skeleton } from "../ui/skeleton";
+import React from "react";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -64,15 +65,38 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isMobile } = useSidebar();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const router = useRouter();
   
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
 
-  const handleLogout = () => {
-    auth.signOut();
+  const handleLogout = async () => {
+    await auth.signOut();
+    // Invalidate session cookie by calling our API endpoint
+    await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: '' }), // Sending empty token to signal logout
+    });
+    router.push('/login');
   };
+  
+  if (isUserLoading || !user) {
+    return (
+       <div className="flex h-screen w-full items-center justify-center">
+        <Skeleton className="h-12 w-12 rounded-full" />
+      </div>
+    )
+  }
+
 
   const UserAvatar = () => {
     if(isUserLoading) return <Skeleton className="h-8 w-8 rounded-full" />
