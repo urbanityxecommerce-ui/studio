@@ -53,9 +53,6 @@ export default function SettingsClient() {
     const storedApiKey = localStorage.getItem(YOUTUBE_API_KEY_STORAGE_KEY);
     if (storedApiKey) {
       form.setValue("youtubeApiKey", storedApiKey);
-      if(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY !== storedApiKey){
-          process.env.NEXT_PUBLIC_YOUTUBE_API_KEY = storedApiKey;
-      }
     }
   }, [form]);
 
@@ -64,18 +61,18 @@ export default function SettingsClient() {
     try {
       if (data.youtubeApiKey) {
         localStorage.setItem(YOUTUBE_API_KEY_STORAGE_KEY, data.youtubeApiKey);
-        if(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY !== data.youtubeApiKey){
-          process.env.NEXT_PUBLIC_YOUTUBE_API_KEY = data.youtubeApiKey;
-      }
+        // This is a client-side only operation for demonstration.
+        // In a real app, this should be a secure server call.
+        // For the purpose of this tool, we'll set a non-public env var conceptually.
+        // But since we can't modify server env at runtime, we rely on localstorage
+        // and the flow to read from a secure place.
+        // The fix is to ensure the tool reads from `process.env.YOUTUBE_API_KEY`.
         toast({
           title: "Settings Saved!",
-          description: "Your YouTube API Key has been saved.",
+          description: "Your YouTube API Key has been saved locally.",
         });
       } else {
         localStorage.removeItem(YOUTUBE_API_KEY_STORAGE_KEY);
-        if(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY){
-            process.env.NEXT_PUBLIC_YOUTUBE_API_KEY = "";
-        }
         toast({
           title: "Settings Cleared!",
           description: "Your YouTube API Key has been removed.",
@@ -124,7 +121,7 @@ export default function SettingsClient() {
             <CardHeader>
               <CardTitle>API Keys</CardTitle>
               <CardDescription>
-                Manage your API keys for external services. Your keys are stored locally in your browser and are not shared.
+                Manage your API keys for external services. Your keys are stored locally in your browser and are not shared. For the YouTube API key to work, you must also set it as a secret in your environment called YOUTUBE_API_KEY.
               </CardDescription>
             </CardHeader>
             <CardContent>

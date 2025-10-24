@@ -15,6 +15,7 @@ import {
   Search,
   Settings,
   Users,
+  LogOut,
 } from "lucide-react";
 
 import { Logo } from "@/components/icons";
@@ -30,6 +31,17 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth, useUser } from "@/firebase";
+import { getAuth } from "firebase/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Skeleton } from "../ui/skeleton";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -51,11 +63,27 @@ const bottomNavItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  
   const isActive = (href: string) => {
-    // Special case for root, otherwise it will match all paths.
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
+
+  const handleLogout = () => {
+    auth.signOut();
+  };
+
+  const UserAvatar = () => {
+    if(isUserLoading) return <Skeleton className="h-8 w-8 rounded-full" />
+    return (
+      <Avatar className="size-full p-1.5">
+          <AvatarImage src={user?.photoURL || `https://picsum.photos/seed/${user?.uid}/40/40`} alt="User" />
+          <AvatarFallback>{user?.email?.[0].toUpperCase() || 'U'}</AvatarFallback>
+      </Avatar>
+    )
+  }
 
   return (
     <>
@@ -99,15 +127,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuItem>
             ))}
              <SidebarMenuItem>
-                <SidebarMenuButton tooltip={{children: "User Profile"}} asChild>
-                    <Link href="/profile">
-                        <Avatar className="size-full p-1.5">
-                            <AvatarImage src="https://picsum.photos/seed/user/40/40" alt="User" />
-                            <AvatarFallback>U</AvatarFallback>
-                        </Avatar>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <SidebarMenuButton tooltip={{children: "User Profile"}} asChild={false}>
+                        <UserAvatar />
                         <span>User Profile</span>
-                    </Link>
-                </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="mb-2 w-56">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                       <DropdownMenuItem>Billing</DropdownMenuItem>
+                      <DropdownMenuItem>Team</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
              </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
