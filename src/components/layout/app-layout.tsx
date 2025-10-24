@@ -94,7 +94,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const handleUpgrade = () => {
     const whatsappNumber = "7478802433";
-    const message = `Hi! I'm interested in upgrading to the premium monthly subscription. Could you please let me know the pricing for India?\n\nI'm excited about the personalized guidance for SEO, content improvements, and custom thumbnail creation.`;
+    const message = `Hi! I'm interested in upgrading to the premium monthly subscription for CreatorX SEO.\n\nI'm excited about the personalized guidance for SEO, content improvements, and custom thumbnail creation. Could you please let me know the pricing details?`;
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
