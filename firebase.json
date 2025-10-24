@@ -13,9 +13,7 @@
   },
   "auth": {
     "providers": [
-      "anonymous",
-      "google.com",
-      "password"
+      "anonymous"
     ]
   }
 }
