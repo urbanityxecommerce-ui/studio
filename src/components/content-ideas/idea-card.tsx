@@ -17,7 +17,10 @@ import {
   Text,
   ThumbsUp,
   Timer,
+  Copy,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
 
 type Idea = GenerateContentIdeasOutput["ideas"][0];
 
@@ -26,6 +29,8 @@ interface IdeaCardProps {
 }
 
 export default function IdeaCard({ idea }: IdeaCardProps) {
+  const { toast } = useToast();
+
   const getDifficultyInfo = (
     score: number
   ): { variant: "secondary" | "default" | "destructive"; text: string } => {
@@ -35,6 +40,14 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
   };
 
   const difficulty = getDifficultyInfo(idea.difficultyScore);
+
+  const copyTags = () => {
+    navigator.clipboard.writeText(idea.tags.join(" "));
+    toast({
+      title: "Tags Copied!",
+      description: "The tags have been copied to your clipboard.",
+    });
+  };
 
   return (
     <AccordionItem value={idea.title} asChild>
@@ -88,12 +101,21 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
               </ul>
             </Section>
             <Section icon={Hash} title="Tags / Hashtags">
-              <div className="flex flex-wrap gap-2">
-                {idea.tags.map((tag, i) => (
-                  <Badge key={i} variant="outline">
-                    {tag}
-                  </Badge>
-                ))}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-wrap gap-2">
+                  {idea.tags.map((tag, i) => (
+                    <Badge key={i} variant="outline" className="cursor-pointer" onClick={() => {
+                      navigator.clipboard.writeText(tag);
+                      toast({ title: "Tag Copied!", description: `"${tag}" copied to clipboard.`});
+                    }}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <Button variant="ghost" size="sm" onClick={copyTags} className="mt-2 justify-start px-0 w-fit">
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy all tags
+                </Button>
               </div>
             </Section>
           </div>
