@@ -4,11 +4,9 @@ import AppLayout from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const whatsAppNumber = "7478802433";
-const price = "$19/month";
-const message = `Hi! I'm interested in upgrading to the CreatorX SEO premium monthly subscription for ${price}.\n\nI'm excited about the personalized guidance for SEO, content improvements, and custom thumbnail creation. Please let me know the next steps!`;
-const whatsappUrl = `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`;
 
 const benefits = [
     "Personalized 1-on-1 WhatsApp Guidance",
@@ -19,9 +17,42 @@ const benefits = [
     "Outrank Your Competitors",
 ];
 
+const pricing: { [key: string]: { price: string; currency: string } } = {
+    'en-IN': { price: '₹1499/month', currency: 'INR' },
+    'en-US': { price: '$19/month', currency: 'USD' },
+    'default': { price: '₹1499/month', currency: 'INR' },
+};
+
+
 export default function UpgradePage() {
+    const [displayPrice, setDisplayPrice] = useState(pricing.default.price);
+    const [whatsappUrl, setWhatsappUrl] = useState('');
+
+    useEffect(() => {
+        // This runs only on the client
+        const userLang = navigator.language;
+        let selectedPrice = pricing.default;
+
+        if (userLang.includes('IN')) {
+             selectedPrice = pricing['en-IN'];
+        } else if (userLang.includes('US')) {
+             selectedPrice = pricing['en-US'];
+        } else {
+            // Fallback for other international users
+             selectedPrice = pricing['en-US'];
+        }
+
+        setDisplayPrice(selectedPrice.price);
+
+        const message = `Hi! I'm interested in upgrading to the CreatorX SEO premium monthly subscription for ${selectedPrice.price}.\n\nPlease let me know the next steps!`;
+        setWhatsappUrl(`https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`);
+
+    }, []);
+
     const handleUpgradeClick = () => {
-        window.open(whatsappUrl, "_blank");
+        if (whatsappUrl) {
+            window.open(whatsappUrl, "_blank");
+        }
     };
 
     return (
@@ -50,10 +81,10 @@ export default function UpgradePage() {
                             ))}
                         </div>
                         <div className="text-center pt-4">
-                            <p className="text-4xl font-bold tracking-tight">{price}</p>
+                            <p className="text-4xl font-bold tracking-tight">{displayPrice}</p>
                             <p className="text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
                         </div>
-                         <Button onClick={handleUpgradeClick} size="lg" className="w-full text-lg h-12 mt-4">
+                         <Button onClick={handleUpgradeClick} size="lg" className="w-full text-lg h-12 mt-4" disabled={!whatsappUrl}>
                             <Zap className="mr-2 h-5 w-5" />
                             Upgrade Now & Chat on WhatsApp
                         </Button>
