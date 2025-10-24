@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 const whatsAppNumber = "7478802433";
 
 const proBenefits = [
-    "Personalized 1-on-1 WhatsApp Guidance",
+    "Unlimited 1-on-1 WhatsApp Guidance",
     "Advanced SEO & Content Strategy",
     "Custom Thumbnail Design Service",
     "Actionable Feedback on Your Content",
@@ -19,12 +19,11 @@ const proBenefits = [
 ];
 
 const starterBenefits = [
-    "Weekly 'Trending Topics' Report",
-    "Access to 'Pro' Thumbnail Templates",
-    "Email Support (24-hour response)",
-    "Save & Track 2x More Keywords",
+    "1-on-1 WhatsApp Guidance (Bi-Weekly Check-in)",
+    "Thumbnail Reviews (Up to 2 per month)",
     "AI-Powered Content Ideas",
     "Keyword Research & Competitor Analysis",
+    "Standard Email Support",
 ];
 
 const pricing = {
