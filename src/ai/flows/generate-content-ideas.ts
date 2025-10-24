@@ -63,7 +63,7 @@ Each content idea should include:
 - 5 SEO title variations
 - A 10-second viral hook
 - 3 thumbnail concepts (text & composition)
-- A 150-character short description. This MUST be 150 characters or less.
+- A short description. This description MUST be 150 characters or less.
 - 5 tags/hashtags
 - 3 timestamped structure points
 - 1 repurpose suggestion
