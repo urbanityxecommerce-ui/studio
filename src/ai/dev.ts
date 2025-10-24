@@ -7,3 +7,4 @@ import '@/ai/flows/optimize-video-thumbnails.ts';
 import '@/ai/flows/generate-reel-captions.ts';
 import '@/ai/flows/generate-content-ideas.ts';
 import '@/ai/flows/search-keywords.ts';
+import '@/ai/tools/youtube.ts';

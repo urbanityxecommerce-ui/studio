@@ -62,11 +62,11 @@ export default function CompetitorAnalysisClient() {
       }
     } catch (error) {
       console.error("Error analyzing content:", error);
+      const errorMessage = error instanceof Error ? error.message : "There was a problem analyzing the content. Please try again.";
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description:
-          "There was a problem analyzing the content. Please try again.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -88,7 +88,7 @@ export default function CompetitorAnalysisClient() {
             <CardHeader>
               <CardTitle>Analyze Competitor</CardTitle>
               <CardDescription>
-                Enter a link to a competitor's YouTube or Instagram channel/video.
+                Enter a link to a competitor's YouTube channel or video.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -131,13 +131,13 @@ export default function CompetitorAnalysisClient() {
             <Card>
                 <CardHeader>
                     <CardTitle>Analysis for "{form.getValues('competitorChannelOrVideoLink')}"</CardTitle>
-                    <CardDescription>Here's a breakdown of your competitor's content.</CardDescription>
+                    <CardDescription>Here's a breakdown of your competitor's content strategy.</CardDescription>
                 </CardHeader>
             </Card>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Top Videos</CardTitle>
+                        <CardTitle>Top 5 Videos</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul className="list-disc space-y-2 pl-5">
@@ -163,7 +163,7 @@ export default function CompetitorAnalysisClient() {
                         {results.commonTags.map((tag, i) => <Badge key={i} variant="secondary">{tag}</Badge>)}
                     </CardContent>
                 </Card>
-                 <Card>
+                 <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle>Content Gap Opportunities</CardTitle>
                     </CardHeader>
@@ -173,7 +173,7 @@ export default function CompetitorAnalysisClient() {
                         </ul>
                     </CardContent>
                 </Card>
-                 <Card>
+                 <Card className="lg:col-span-3">
                     <CardHeader>
                         <CardTitle>Recommended Content Angles</CardTitle>
                     </CardHeader>
@@ -181,14 +181,6 @@ export default function CompetitorAnalysisClient() {
                         <ul className="list-disc space-y-2 pl-5">
                             {results.contentAngles.map((angle, i) => <li key={i}>{angle}</li>)}
                         </ul>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Average Watch Time</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-3xl font-bold">{results.averageWatchTime}</p>
                     </CardContent>
                 </Card>
             </div>
