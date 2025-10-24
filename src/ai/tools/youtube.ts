@@ -66,9 +66,10 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
             if (videoResponse.data.items && videoResponse.data.items.length > 0) {
                 channelId = videoResponse.data.items[0].snippet?.channelId ?? null;
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching video details:', error);
-            throw new Error('Failed to retrieve video details from YouTube API.');
+            const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+            throw new Error(`Failed to retrieve video details from YouTube API: ${detail}`);
         }
     } else {
         channelId = extractChannelId(url);
@@ -86,9 +87,10 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
                      if (searchResponse.data.items && searchResponse.data.items.length > 0) {
                         channelId = searchResponse.data.items[0].snippet?.channelId ?? null;
                     }
-                } catch(error) {
+                } catch(error: any) {
                     console.error('Error fetching channel details by username:', error);
-                    throw new Error('Failed to retrieve channel details by username from YouTube API.');
+                    const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+                    throw new Error(`Failed to retrieve channel details by username from YouTube API: ${detail}`);
                 }
             }
         }
@@ -138,9 +140,10 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
         const allTags = videos.flatMap(video => video.snippet?.tags ?? []);
 
         return { videoTitles, videoTags: Array.from(new Set(allTags)) }; // Return unique tags
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching data from YouTube API:', error);
-      throw new Error('An error occurred while fetching data from the YouTube API.');
+      const detail = error.errors?.[0]?.message || 'Check your YouTube API key and permissions.';
+      throw new Error(`An error occurred while fetching data from the YouTube API: ${detail}`);
     }
   }
 );
