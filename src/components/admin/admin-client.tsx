@@ -2,14 +2,13 @@
 'use client';
 
 import * as React from 'react';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { collection, doc, updateDoc, query, where, getDocs, DocumentData } from 'firebase/firestore';
+import { collection, doc, updateDoc, query, where, getDocs } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Skeleton } from '../ui/skeleton';
 import { Shield, Search, Loader2 } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
@@ -40,7 +39,8 @@ export default function AdminClient() {
   const [searchedUser, setSearchedUser] = React.useState<AppUser | null>(null);
   const [isSearching, setIsSearching] = React.useState(false);
 
-  const isAdmin = user?.uid === 'iAZH63A65dQrJg4pXOrsyn9ZXwH2';
+  const ADMIN_UID = "iAZH63A65dQrJg4pXOrsyn9ZXwH2";
+  const isAdmin = user?.uid === ADMIN_UID;
 
   const searchForm = useForm<SearchFormValues>({
     resolver: zodResolver(searchFormSchema),
@@ -59,6 +59,7 @@ export default function AdminClient() {
   }, [isUserLoading, isAdmin, router, toast]);
 
   const handleSearch = async (data: SearchFormValues) => {
+    if (!firestore) return;
     setIsSearching(true);
     setSearchedUser(null);
     try {
@@ -89,6 +90,7 @@ export default function AdminClient() {
   };
 
   const handlePlanChange = async (userId: string, newPlan: 'free' | 'starter' | 'pro') => {
+    if (!firestore) return;
     try {
       const userDocRef = doc(firestore, 'users', userId);
       await updateDoc(userDocRef, { plan: newPlan });
