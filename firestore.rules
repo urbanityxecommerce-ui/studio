@@ -1,53 +1,60 @@
-/**
- * @fileOverview
- * This ruleset enforces a strict user-ownership model for private data and allows public read access to certain collections.
- *
- * Data Structure:
- * - User-specific data (channel accounts, content ideas, WhatsApp sessions) is nested under `/users/{userId}`.
- * - Public data (trend events, keywords, competitors) resides in top-level collections.
- *
- * Key Security Decisions:
- * - User data is strictly segregated to prevent unauthorized access.
- * - Public data is accessible to all users for reading.
- * - Write access to public collections is not granted in this prototype.
- * - The rules explicitly deny any operations not explicitly allowed.
- * - Subscriptions are stored in a top-level collection but write access is denied.
- *
- * Denormalization for Authorization:
- *  - Data is structured under `/users/{userId}` for simple path-based authorization, avoiding the need for `get()` calls to determine ownership.
- *
- * Structural Segregation:
- *  - Public data (TrendEvents, Keywords, Competitors) is stored in top-level collections, while private user data is stored under `/users/{userId}`.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile data.
+     * @description Protects user profiles, ensuring only the authenticated user can access their own profile.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user creates their own profile.
-     * @allow (get, update, delete) - Authenticated user accesses their own profile.
-     * @deny (create) - Authenticated user tries to create another user's profile.
-     * @deny (get, update, delete) - Authenticated user tries to access another user's profile.
-     * @principle Enforces document ownership for writes.
+     * @allow (create) User with ID matching auth UID can create their profile.
+     * @allow (get, update, delete) Authenticated user can access their own profile.
+     * @deny (create) User with ID not matching auth UID cannot create a profile.
+     * @deny (get, update, delete) Authenticated user cannot access another user's profile.
+     * @deny (list) Listing all users is not allowed.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to channel accounts owned by a user.
+     * @description Manages channel accounts, ensuring only the owning user can access their channel accounts.
      * @path /users/{userId}/channelAccounts/{channelAccountId}
-     * @allow (create, get, list, update, delete) - Authenticated user accesses their own channel accounts.
-     * @deny (create, get, list, update, delete) - Authenticated user tries to access another user's channel accounts.
-     * @principle Restricts access to a user's own data tree.
+     * @allow (create) Authenticated user can create a channel account under their profile.
+     * @allow (get, update, delete) Authenticated user can access their own channel accounts.
+     * @deny (create) Authenticated user cannot create a channel account under another user's profile.
+     * @deny (get, update, delete) Authenticated user cannot access another user's channel accounts.
+     * @deny (list) Authenticated user can list their own channel accounts.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/channelAccounts/{channelAccountId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId);
@@ -56,13 +63,28 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to content ideas owned by a user.
+     * @description Manages content ideas, ensuring only the owning user can access their content ideas.
      * @path /users/{userId}/contentIdeas/{contentIdeaId}
-     * @allow (create, get, list, update, delete) - Authenticated user accesses their own content ideas.
-     * @deny (create, get, list, update, delete) - Authenticated user tries to access another user's content ideas.
-     * @principle Restricts access to a user's own data tree.
+     * @allow (create) Authenticated user can create a content idea under their profile.
+     * @allow (get, update, delete) Authenticated user can access their own content ideas.
+     * @deny (create) Authenticated user cannot create a content idea under another user's profile.
+     * @deny (get, update, delete) Authenticated user cannot access another user's content ideas.
+     * @deny (list) Authenticated user can list their own content ideas.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/contentIdeas/{contentIdeaId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId);
@@ -70,14 +92,29 @@ service cloud.firestore {
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
-    /**
-     * @description Controls access to WhatsApp sessions owned by a user.
-     * @path /users/{userId}/whatsAppSessions/{sessionId}
-     * @allow (create, get, list, update, delete) - Authenticated user accesses their own WhatsApp sessions.
-     * @deny (create, get, list, update, delete) - Authenticated user tries to access another user's WhatsApp sessions.
-     * @principle Restricts access to a user's own data tree.
-     */
+     /**
+      * @description Manages WhatsApp sessions, ensuring only the owning user can access their WhatsApp sessions.
+      * @path /users/{userId}/whatsAppSessions/{sessionId}
+      * @allow (create) Authenticated user can create a WhatsApp session under their profile.
+      * @allow (get, update, delete) Authenticated user can access their own WhatsApp sessions.
+      * @deny (create) Authenticated user cannot create a WhatsApp session under another user's profile.
+      * @deny (get, update, delete) Authenticated user cannot access another user's WhatsApp sessions.
+      * @deny (list) Authenticated user can list their own WhatsApp sessions.
+      * @principle Enforces document ownership for all operations.
+      */
     match /users/{userId}/whatsAppSessions/{sessionId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId);
@@ -86,10 +123,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to video metrics associated with a channel account.
+     * @description Manages video metrics associated with a channel account.
      * @path /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}
-     * @allow (get, list) - Public read access to video metrics.
-     * @deny (create, update, delete) - No write access allowed.
+     * @allow (get, list) Any user can read video metrics.
+     * @deny (create, update, delete) No one can create, update, or delete video metrics.
+     * @principle Public read, no write access.
      */
     match /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} {
       allow get, list: if true;
@@ -97,10 +135,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to trending events.
+     * @description Manages trending events, allowing public read access.
      * @path /trendEvents/{trendEventId}
-     * @allow (get, list) - Public read access to trending events.
-     * @deny (create, update, delete) - No write access allowed.
+     * @allow (get, list) Any user can read trending events.
+     * @deny (create, update, delete) No one can create, update, or delete trending events.
+     * @principle Public read, no write access.
      */
     match /trendEvents/{trendEventId} {
       allow get, list: if true;
@@ -108,10 +147,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to subscriptions.
+     * @description Manages subscription data.
      * @path /subscriptions/{subscriptionId}
-     * @allow (get, list) - Public read access to subscriptions.
-     * @deny (create, update, delete) - No write access allowed.
+     * @allow (get, list) Any user can read subscription data.
+     * @deny (create, update, delete) No one can create, update, or delete subscription data.
+     * @principle Public read, no write access.
      */
     match /subscriptions/{subscriptionId} {
       allow get, list: if true;
@@ -119,10 +159,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to keywords.
+     * @description Manages keyword data, allowing public read access.
      * @path /keywords/{keywordId}
-     * @allow (get, list) - Public read access to keywords.
-     * @deny (create, update, delete) - No write access allowed.
+     * @allow (get, list) Any user can read keyword data.
+     * @deny (create, update, delete) No one can create, update, or delete keyword data.
+     * @principle Public read, no write access.
      */
     match /keywords/{keywordId} {
       allow get, list: if true;
@@ -130,27 +171,15 @@ service cloud.firestore {
     }
 
     /**
-     * @description Controls access to competitors.
+     * @description Manages competitor data, allowing public read access.
      * @path /competitors/{competitorId}
-     * @allow (get, list) - Public read access to competitors.
-     * @deny (create, update, delete) - No write access allowed.
+     * @allow (get, list) Any user can read competitor data.
+     * @deny (create, update, delete) No one can create, update, or delete competitor data.
+     * @principle Public read, no write access.
      */
     match /competitors/{competitorId} {
       allow get, list: if true;
       allow create, update, delete: if false;
     }
-  }
-
-  // Helper Functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
-
-  function isOwner(userId) {
-    return request.auth.uid == userId;
-  }
-
-  function isExistingOwner(userId) {
-    return isSignedIn() && isOwner(userId) && resource != null;
   }
 }
