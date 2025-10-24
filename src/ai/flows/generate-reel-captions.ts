@@ -19,10 +19,10 @@ export type GenerateReelCaptionsInput = z.infer<typeof GenerateReelCaptionsInput
 const GenerateReelCaptionsOutputSchema = z.object({
   captions: z.array(
     z.object({
-      caption: z.string().describe('A creative caption for the Instagram Reel.'),
-      cta: z.string().describe('A call to action variation for the caption.'),
+      caption: z.string().describe('A creative, human-sounding caption for the Instagram Reel. It should be engaging and not sound like it was written by an AI.'),
+      cta: z.string().describe('A compelling call to action that matches the tone of the caption.'),
     })
-  ).describe('An array of creative captions with call to action variations.'),
+  ).length(5).describe('An array of 5 creative captions with call to action variations.'),
 });
 
 export type GenerateReelCaptionsOutput = z.infer<typeof GenerateReelCaptionsOutputSchema>;
@@ -35,12 +35,20 @@ const generateReelCaptionsPrompt = ai.definePrompt({
   name: 'generateReelCaptionsPrompt',
   input: {schema: GenerateReelCaptionsInputSchema},
   output: {schema: GenerateReelCaptionsOutputSchema},
-  prompt: `You are a social media expert specializing in creating engaging captions for Instagram Reels.
-  Generate 3 different captions for a Reel about the following topic, each with a unique call to action.  The captions should be unique and interesting.
+  prompt: `You are a viral social media strategist and a brilliant copywriter. Your goal is to generate 5 distinct, highly engaging, human-sounding captions for an Instagram Reel on a given topic. Avoid robotic language and generic phrases.
 
   Topic: {{{topic}}}
 
-  Format your response as a JSON array of objects with 'caption' and 'cta' fields. Use the descriptions from the schema to generate creative captions and compelling CTAs.
+  For each of the 5 captions, adopt a different creative angle:
+  1.  **Storytelling:** Start with a personal story or a relatable scenario.
+  2.  **Question-Based:** Ask a thought-provoking question to spark conversation.
+  3.  **Bold & Controversial:** Make a strong, slightly controversial statement to grab attention.
+  4.  **Humorous & Witty:** Use humor or a clever pun to be memorable.
+  5.  **Value-Driven:** Offer a quick, valuable tip or a surprising fact.
+
+  Each caption must have a unique and compelling call to action (CTA) that naturally follows the caption's tone. Use emojis where appropriate to add personality.
+
+  Format your response as a JSON object that strictly follows the output schema.
   `,
 });
 
