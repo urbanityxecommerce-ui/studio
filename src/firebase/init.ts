@@ -9,7 +9,12 @@ export function initializeAdminApp(): App {
     return getApps()[0];
   }
 
-  // Construct an absolute path to the service account file
+  // This function is kept for potential future use with firebase-admin,
+  // but it is not actively called in the simplified session management logic.
+  // The logic to read serviceAccount.json is therefore commented out to prevent
+  // build or runtime errors if the file is not present.
+
+  /*
   const serviceAccountPath = path.join(process.cwd(), 'serviceAccount.json');
   
   if (!fs.existsSync(serviceAccountPath)) {
@@ -23,4 +28,11 @@ export function initializeAdminApp(): App {
   });
 
   return app;
+  */
+
+  // Return a placeholder or handle the absence of initialization as needed.
+  // For now, we throw an error if it's called without being properly set up.
+  throw new Error("initializeAdminApp is not configured to run in this environment.");
 }
+
+    

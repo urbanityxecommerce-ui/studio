@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -69,6 +70,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   
   React.useEffect(() => {
+    // Only redirect if authentication has finished loading and there's no user.
     if (!isUserLoading && !user) {
       router.push('/login');
     }
@@ -90,10 +92,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
   
+  // Display a loading skeleton while the user state is being determined.
   if (isUserLoading || !user) {
     return (
        <div className="flex h-screen w-full items-center justify-center">
-        <Skeleton className="h-12 w-12 rounded-full" />
+         <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+            </div>
+        </div>
       </div>
     )
   }
@@ -187,3 +196,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </ClientOnly>
   );
 }
+
+    
