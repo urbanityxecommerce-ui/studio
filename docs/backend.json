@@ -412,6 +412,7 @@
   },
   "auth": {
     "providers": [
+      "google.com",
       "password",
       "anonymous"
     ]
