@@ -1,10 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeAdminApp } from '@/firebase/init';
 
-if (!getApps().length) {
-  initializeApp();
-}
+initializeAdminApp();
 
 export async function POST(request: NextRequest) {
   const { idToken } = await request.json();
