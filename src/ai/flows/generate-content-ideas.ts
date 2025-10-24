@@ -28,7 +28,7 @@ const ContentIdeaSchema = z.object({
   seoTitleVariations: z.array(z.string()).length(5).describe('Five SEO-optimized variations of the title.'),
   viralHook: z.string().describe('A 10-second viral hook to grab attention.'),
   thumbnailConcepts: z.array(z.string()).length(3).describe('Three thumbnail concepts with text and composition suggestions.'),
-  shortDescription: z.string().max(150).describe('A 150-word short description of the content.'),
+  shortDescription: z.string().max(150).describe('A 150-character short description of the content.'),
   tags: z.array(z.string()).length(5).describe('Five relevant tags/hashtags.'),
   timestampedStructurePoints: z.array(z.string()).length(3).describe('Three timestamped structure points for the content.'),
   repurposeSuggestion: z.string().describe('A suggestion for repurposing the content.'),
@@ -63,7 +63,7 @@ Each content idea should include:
 - 5 SEO title variations
 - A 10-second viral hook
 - 3 thumbnail concepts (text & composition)
-- A 150-word short description
+- A 150-character short description
 - 5 tags/hashtags
 - 3 timestamped structure points
 - 1 repurpose suggestion
