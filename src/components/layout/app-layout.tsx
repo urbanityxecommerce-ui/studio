@@ -43,6 +43,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Skeleton } from "../ui/skeleton";
 import React from "react";
+import ClientOnly from "../client-only";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -109,7 +110,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    <ClientOnly>
       <Sidebar variant="sidebar" collapsible="icon">
         <SidebarHeader className="h-16 items-center justify-center gap-2 border-b border-sidebar-border px-3 text-lg font-semibold text-sidebar-foreground">
           <Logo />
@@ -183,6 +184,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </SidebarInset>
-    </>
+    </ClientOnly>
   );
 }
