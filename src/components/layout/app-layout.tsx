@@ -31,8 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/content-ideas", label: "Content Ideas", icon: Lightbulb },
+  { href: "/", label: "Content Ideas", icon: Lightbulb },
   { href: "/keyword-research", label: "Keyword Research", icon: Search },
   { href: "/competitor-analysis", label: "Competitor Analysis", icon: Users },
   { href: "/thumbnail-optimizer", label: "Thumbnail Optimizer", icon: Image },
@@ -51,11 +50,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isMobile } = useSidebar();
   const isActive = (href: string) => {
+    // Special case for root, otherwise it will match all paths.
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   };
-  // For demo, we are on the root, but we want to show content-ideas as active.
-  const isContentIdeasActive = pathname === "/";
 
   return (
     <>
@@ -73,11 +71,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={
-                    item.href === "/content-ideas"
-                      ? isContentIdeasActive
-                      : isActive(item.href)
-                  }
+                  isActive={isActive(item.href)}
                   tooltip={{ children: item.label }}
                 >
                   <Link href={item.href}>
