@@ -154,6 +154,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarContent>
 
         <SidebarContent className="p-2">
+            <div className="p-2 group-data-[collapsible=icon]:p-0">
+                <Button onClick={handleUpgrade} size="sm" className="w-full">
+                    <Zap className="mr-2 h-4 w-4" />
+                    <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
+                </Button>
+            </div>
            <SidebarMenu>
             {bottomNavItems.map((item) => (
               <SidebarMenuItem key={item.href}>
@@ -194,10 +200,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1" />
-           <Button onClick={handleUpgrade} size="sm">
-            <Zap className="mr-2 h-4 w-4" />
-            Upgrade
-          </Button>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
