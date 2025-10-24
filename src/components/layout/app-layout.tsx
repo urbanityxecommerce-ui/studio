@@ -5,11 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart,
-  Calendar,
-  Film,
   HelpCircle,
   Image,
-  LayoutDashboard,
   Lightbulb,
   MessageSquare,
   Repeat,
@@ -17,6 +14,9 @@ import {
   Settings,
   Users,
   LogOut,
+  ChevronRight,
+  Zap,
+  Film,
 } from "lucide-react";
 
 import { Logo } from "@/components/icons";
@@ -33,7 +33,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth, useUser } from "@/firebase";
-import { getAuth } from "firebase/auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +44,7 @@ import {
 import { Skeleton } from "../ui/skeleton";
 import React from "react";
 import ClientOnly from "../client-only";
+import { Button } from "../ui/button";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -68,7 +68,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
-  
+
   React.useEffect(() => {
     // Only redirect if authentication has finished loading and there's no user.
     if (!isUserLoading && !user) {
@@ -91,7 +91,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     });
     router.push('/login');
   };
-  
+
+  const handleUpgrade = () => {
+    const whatsappNumber = "7478802433";
+    const message = `Hi! I'm interested in upgrading to the premium monthly subscription. Could you please let me know the pricing for India?\n\nI'm excited about the personalized guidance for SEO, content improvements, and custom thumbnail creation.`;
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
+
   // Display a loading skeleton while the user state is being determined.
   if (isUserLoading || !user) {
     return (
@@ -106,7 +113,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
     )
   }
-
 
   const UserAvatar = () => {
     if(isUserLoading) return <Skeleton className="h-8 w-8 rounded-full" />
@@ -187,8 +193,39 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
           <SidebarTrigger className="md:hidden" />
-          <div className="flex-1">
-            {/* Can add breadcrumbs or page title here */}
+          <div className="flex-1" />
+           <Button onClick={handleUpgrade} size="sm">
+            <Zap className="mr-2 h-4 w-4" />
+            Upgrade
+          </Button>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="h-8 w-8 rounded-full outline-none ring-ring ring-offset-2 ring-offset-background focus-visible:ring-2">
+                  <UserAvatar />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span>{user?.displayName || "User"}</span>
+                    <span className="text-xs font-normal text-muted-foreground">{user?.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                  <LogOut className="mr-2" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
@@ -196,5 +233,3 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </ClientOnly>
   );
 }
-
-    
