@@ -31,9 +31,8 @@ import { Progress } from "../ui/progress";
 
 const formSchema = z.object({
   videoTitle: z.string().min(2, { message: "A video title is required." }),
-  thumbnail: z.custom<File>((v) => v instanceof File, {
-    message: "A thumbnail image is required.",
-  }),
+  thumbnail: z.instanceof(File, { message: "A thumbnail image is required." })
+    .refine((file) => file.size > 0, "A thumbnail image is required."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,23 +47,10 @@ export default function ThumbnailOptimizerClient() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       videoTitle: "",
+      thumbnail: undefined,
     },
   });
-  
-  const thumbnailRef = form.register("thumbnail");
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      form.setValue("thumbnail", file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
   const toBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -78,7 +64,7 @@ export default function ThumbnailOptimizerClient() {
     setResults(null);
     try {
         const thumbnailDataUri = await toBase64(data.thumbnail);
-        const result = await optimizeVideoThumbnails({ ...data, thumbnailDataUri });
+        const result = await optimizeVideoThumbnails({ videoTitle: data.videoTitle, thumbnailDataUri });
         if (result) {
             setResults(result);
             toast({
@@ -124,7 +110,7 @@ export default function ThumbnailOptimizerClient() {
                  <FormField
                   control={form.control}
                   name="thumbnail"
-                  render={({ field }) => (
+                  render={({ field: { onChange, value, ...rest } }) => (
                     <FormItem>
                       <FormLabel>Thumbnail</FormLabel>
                       <FormControl>
@@ -144,8 +130,18 @@ export default function ThumbnailOptimizerClient() {
                             type="file"
                             className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                             accept="image/png, image/jpeg, image/webp"
-                            {...thumbnailRef}
-                            onChange={handleFileChange}
+                            {...rest}
+                            onChange={(event) => {
+                              const file = event.target.files?.[0];
+                              if (file) {
+                                onChange(file);
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  setPreview(reader.result as string);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
                           />
                         </div>
                       </FormControl>
