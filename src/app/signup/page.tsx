@@ -1,6 +1,5 @@
-import LoginClient from '@/components/auth/login-client';
+import SignupClient from '@/components/auth/signup-client';
 
 export default function SignupPage() {
-  // Redirecting to login page as there is no separate signup flow for anonymous auth
-  return <LoginClient />;
+  return <SignupClient />;
 }
