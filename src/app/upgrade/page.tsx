@@ -19,11 +19,12 @@ const proBenefits = [
 ];
 
 const starterBenefits = [
+    "Weekly 'Trending Topics' Report",
+    "Access to 'Pro' Thumbnail Templates",
+    "Email Support (24-hour response)",
+    "Save & Track 2x More Keywords",
     "AI-Powered Content Ideas",
-    "Keyword Research Tool",
-    "Competitor Analysis",
-    "Thumbnail Optimization Suggestions",
-    "Community Support",
+    "Keyword Research & Competitor Analysis",
 ];
 
 const pricing = {
@@ -53,7 +54,7 @@ export default function UpgradePage() {
 
         if (userLang.toLowerCase().includes('in')) {
              selectedPrices = pricing['en-IN'];
-        } else {
+        } else if (userLang.toLowerCase().includes('us')) {
              selectedPrices = pricing['en-US'];
         }
 
