@@ -1,68 +1,290 @@
 /**
- * @file Firestore Security Rules
- * @version 2
+ * @fileoverview Firestore Security Rules for CreatorX SEO platform.
  *
- * @Core Philosophy:
- * This ruleset enforces a strict user-ownership model, where each user can only access their own data stored under their specific user ID.
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for most data. Each user has full control
+ * over their own data tree, while other users cannot access it. The design prioritizes
+ * authorization independence to minimize reads and maximize security.
  *
- * @Data Structure:
- * All user data is stored under the `/users/{userId}` path. Each document represents a user profile.
+ * Data Structure:
+ * - All user-specific data is nested under /users/{userId}. This includes channel accounts,
+ *   content ideas, keywords, competitors, trend events, and WhatsApp sessions.
+ * - Video metrics are nested under /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}.
+ *   The `videoMetrics` document is expected to have a `userId` field for simple authorization
+ *   using the isOwner() function.
+ * - Categories and Subscriptions exist at the top level.
  *
- * @Key Security Decisions:
- * - Users can only create their own profile (self-registration).
- * - Users can only read, update, and delete their own profile.
- * - Listing all users is explicitly denied to protect user privacy.
+ * Key Security Decisions:
+ * - Users can only access their own data. Listing other users' data is disallowed.
+ * - Read permissions on /categories and /subscriptions are public.
  *
- * @Denormalization for Authorization:
- * The `userId` is part of the document path (`/users/{userId}`) and is also enforced as the `id` field inside the document. This redundancy (path + data) allows us to easily and securely validate ownership on both `create` and `update` operations.
+ * Denormalization for Authorization:
+ * - The `VideoMetrics` collection relies on denormalization. Each `videoMetrics` document
+ *   must contain a `userId` field that matches the owner of the parent `channelAccount` document.
+ *   This allows us to authorize access to video metrics using `isOwner(resource.data.userId)`
+ *   without needing to perform a `get()` on the parent `channelAccount` document.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if the user is signed in.
-    function isSignedIn() {
-      return request.auth != null;
-    }
+    /**
+     * @description Allows a user to manage their own user document.
+     * @path /users/{userId}
+     * @allow (create) - User with ID 'user_abc' can create their own document.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own document.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' document.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-    // Helper function to check if the authenticated user ID matches the provided user ID.
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
+      allow get: if isOwner(userId);
+      allow list: if false; // No listing of users
 
-    // Helper function to check if the authenticated user owns the existing document.
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
     }
 
     /**
-     * @description Controls access to user profile data. Only the authenticated user can access their own profile.
-     * @path /users/{userId}
-     * @allow (create) - User 'user_abc' creates their profile with ID 'user_abc'.
-     * @deny (create) - User 'user_abc' attempts to create a profile with ID 'user_xyz'.
-     * @allow (get) - User 'user_abc' reads their own profile.
-     * @deny (get) - User 'user_abc' attempts to read the profile of user 'user_xyz'.
-     * @allow (update) - User 'user_abc' updates their own profile.
-     * @deny (update) - User 'user_abc' attempts to update the profile of user 'user_xyz'.
-     * @allow (delete) - User 'user_abc' deletes their own profile.
-     * @deny (delete) - User 'user_abc' attempts to delete the profile of user 'user_xyz'.
-     * @principle Enforces document ownership for all operations.
+     * @description Allows a user to manage their own channel accounts.
+     * @path /users/{userId}/channelAccounts/{channelAccountId}
+     * @allow (create) - User with ID 'user_abc' can create a channel account.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own channel account.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' channel account.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
      */
-    match /users/{userId} {
-      // Only allow creating a user document if the authenticated user's ID matches the userId path parameter and the ID field in the document.
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+    match /users/{userId}/channelAccounts/{channelAccountId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
 
-      // Allow reading a user document only if the authenticated user's ID matches the userId path parameter.
-      allow get: if isSignedIn() && isOwner(userId);
-
-      // Deny listing all user documents.
+      allow get: if isOwner(userId);
       allow list: if false;
 
-      // Allow updating a user document only if the authenticated user's ID matches the userId path parameter. Also ensure the user ID cannot be changed.
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
 
-      // Allow deleting a user document only if the authenticated user's ID matches the userId path parameter.
-      allow delete: if isExistingOwner(userId);
+    /**
+     * @description Allows a user to manage their own content ideas.
+     * @path /users/{userId}/contentIdeas/{contentIdeaId}
+     * @allow (create) - User with ID 'user_abc' can create a content idea.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own content idea.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' content idea.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/contentIdeas/{contentIdeaId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to manage their own keywords.
+     * @path /users/{userId}/keywords/{keywordId}
+     * @allow (create) - User with ID 'user_abc' can create a keyword.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own keyword.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' keyword.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/keywords/{keywordId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to manage their own competitors.
+     * @path /users/{userId}/competitors/{competitorId}
+     * @allow (create) - User with ID 'user_abc' can create a competitor.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own competitor.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' competitor.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/competitors/{competitorId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Allows a user to manage their own trend events.
+     * @path /users/{userId}/trendEvents/{trendEventId}
+     * @allow (create) - User with ID 'user_abc' can create a trend event.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own trend event.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' trend event.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/trendEvents/{trendEventId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+        /**
+     * @description Allows a user to manage their own WhatsApp sessions.
+     * @path /users/{userId}/whatsAppSessions/{sessionId}
+     * @allow (create) - User with ID 'user_abc' can create a WhatsApp session.
+     *   request.auth.uid == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own WhatsApp session.
+     *   request.auth.uid == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete user 'user_abc' WhatsApp session.
+     *   request.auth.uid == 'user_xyz'
+     * @principle Enforces document ownership for writes.
+     */
+    match /users/{userId}/whatsAppSessions/{sessionId} {
+       function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Allows anyone to read categories, but restricts modifications.
+     * @path /categories/{categoryId}
+     * @allow (get, list) - Any user can read a category.
+     * @deny (create, update, delete) - No one can create, update, or delete categories through client side.
+     * @principle Public read, owner-only writes (currently no owner, so writes are disabled).
+     */
+    match /categories/{categoryId} {
+        function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if true;
+      allow list: if true;
+
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Allows anyone to read subscriptions, but restricts modifications.
+     * @path /subscriptions/{subscriptionId}
+     * @allow (get, list) - Any user can read a subscription.
+     * @deny (create, update, or delete) - No one can create, update, or delete subscriptions through client side.
+     * @principle Public read, owner-only writes (currently no owner, so writes are disabled).
+     */
+    match /subscriptions/{subscriptionId} {
+       function isSignedIn() {
+        return request.auth != null;
+      }
+      allow get: if true;
+      allow list: if true;
+
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+      /**
+     * @description Allows a user to manage video metrics for their channel account.
+     *   Requires the videoMetrics document to have the userId of the owner of the parent
+     *   ChannelAccount for authorization independence.
+     * @path /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}
+     * @allow (create) - User with ID 'user_abc' can create a video metrics document if request.resource.data.userId == 'user_abc'.
+     *   request.auth.uid == 'user_abc' && request.resource.data.userId == 'user_abc'
+     * @allow (get, update, delete) - User with ID 'user_abc' can read, update, and delete their own video metrics document
+     *   if resource.data.userId == 'user_abc'.
+     *   request.auth.uid == 'user_abc' && resource.data.userId == 'user_abc'
+     * @deny (get, update, delete) - User with ID 'user_xyz' cannot read, update, and delete video metrics document for user 'user_abc'.
+     *   request.auth.uid == 'user_xyz' && resource.data.userId == 'user_abc'
+     * @principle Enforces document ownership for writes.
+     */
+    match /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if false;
+
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
   }
 }
