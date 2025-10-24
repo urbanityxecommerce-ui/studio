@@ -124,7 +124,7 @@ export default function ContentIdeasClient() {
             <CardHeader>
               <CardTitle>Idea Generator</CardTitle>
               <CardDescription>
-                Fill in the details below to generate 30 unique content ideas.
+                Fill in the details below to generate 5 unique content ideas.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 md:grid-cols-2">

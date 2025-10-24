@@ -36,7 +36,7 @@ const ContentIdeaSchema = z.object({
 });
 
 const GenerateContentIdeasOutputSchema = z.object({
-  ideas: z.array(ContentIdeaSchema).length(30).describe('A list of 30 content ideas.'),
+  ideas: z.array(ContentIdeaSchema).length(5).describe('A list of 5 content ideas.'),
 });
 
 export type GenerateContentIdeasOutput = z.infer<typeof GenerateContentIdeasOutputSchema>;
@@ -49,7 +49,7 @@ const generateContentIdeasPrompt = ai.definePrompt({
   name: 'generateContentIdeasPrompt',
   input: {schema: GenerateContentIdeasInputSchema},
   output: {schema: GenerateContentIdeasOutputSchema},
-  prompt: `You are a content creation expert. Generate 30 content ideas based on the following criteria:
+  prompt: `You are a content creation expert. Generate 5 content ideas based on the following criteria:
 
 Category: {{{category}}}
 Subcategory: {{{subcategory}}}
