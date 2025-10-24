@@ -2,15 +2,21 @@
 'use client';
 
 import * as React from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { collection, doc, updateDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, query, where, getDocs, DocumentData } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
-import { Shield } from 'lucide-react';
+import { Shield, Search, Loader2 } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
 interface AppUser {
   id: string;
@@ -20,16 +26,26 @@ interface AppUser {
   plan: 'free' | 'starter' | 'pro';
 }
 
+const searchFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+});
+
+type SearchFormValues = z.infer<typeof searchFormSchema>;
+
 export default function AdminClient() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [searchedUser, setSearchedUser] = React.useState<AppUser | null>(null);
+  const [isSearching, setIsSearching] = React.useState(false);
 
-  const isAdmin = user?.uid === process.env.NEXT_PUBLIC_ADMIN_UID;
+  const isAdmin = user?.uid === 'iAZH63A65dQrJg4pXOrsyn9ZXwH2';
 
-  const usersQuery = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
-  const { data: users, isLoading: usersLoading } = useCollection<AppUser>(usersQuery);
+  const searchForm = useForm<SearchFormValues>({
+    resolver: zodResolver(searchFormSchema),
+    defaultValues: { email: "" },
+  });
 
   React.useEffect(() => {
     if (!isUserLoading && !isAdmin) {
@@ -42,10 +58,43 @@ export default function AdminClient() {
     }
   }, [isUserLoading, isAdmin, router, toast]);
 
+  const handleSearch = async (data: SearchFormValues) => {
+    setIsSearching(true);
+    setSearchedUser(null);
+    try {
+      const usersRef = collection(firestore, 'users');
+      const q = query(usersRef, where("email", "==", data.email));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        toast({
+          variant: "destructive",
+          title: "User Not Found",
+          description: `No user found with the email: ${data.email}`,
+        });
+      } else {
+        const userDoc = querySnapshot.docs[0];
+        setSearchedUser({ id: userDoc.id, ...userDoc.data() } as AppUser);
+      }
+    } catch (error) {
+      console.error("Error searching user:", error);
+      toast({
+        variant: "destructive",
+        title: 'Search Failed',
+        description: 'An error occurred while searching for the user.',
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handlePlanChange = async (userId: string, newPlan: 'free' | 'starter' | 'pro') => {
     try {
       const userDocRef = doc(firestore, 'users', userId);
       await updateDoc(userDocRef, { plan: newPlan });
+      if (searchedUser) {
+        setSearchedUser({ ...searchedUser, plan: newPlan });
+      }
       toast({
         title: 'Plan Updated',
         description: `User's plan has been changed to ${newPlan}.`,
@@ -72,13 +121,46 @@ export default function AdminClient() {
     <div className="space-y-8">
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Admin Panel</h1>
-        <p className="text-muted-foreground">Manage users and their subscription plans.</p>
+        <p className="text-muted-foreground">Manage users and their subscription plans by searching for their email.</p>
       </header>
+
+       <Card>
+        <Form {...searchForm}>
+          <form onSubmit={searchForm.handleSubmit(handleSearch)}>
+            <CardHeader>
+              <CardTitle>Search User</CardTitle>
+              <CardDescription>Enter a user's email address to find their profile.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={searchForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isSearching}>
+                {isSearching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+                Search
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+
 
       <Card>
         <CardHeader>
           <CardTitle>User Management</CardTitle>
-          <CardDescription>A list of all registered users in the application.</CardDescription>
+          <CardDescription>The searched user will appear below.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -90,31 +172,24 @@ export default function AdminClient() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {usersLoading &&
-                [...Array(5)].map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="h-4 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-48" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-8 w-24" />
+              {isSearching ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center">
+                      <div className="flex justify-center items-center p-4">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              {!usersLoading &&
-                users?.map((appUser) => (
-                  <TableRow key={appUser.id}>
+              ) : searchedUser ? (
+                  <TableRow key={searchedUser.id}>
                     <TableCell className="font-medium">
-                      {appUser.firstName} {appUser.lastName}
+                      {searchedUser.firstName} {searchedUser.lastName}
                     </TableCell>
-                    <TableCell>{appUser.email}</TableCell>
+                    <TableCell>{searchedUser.email}</TableCell>
                     <TableCell>
                       <Select
-                        defaultValue={appUser.plan || 'free'}
-                        onValueChange={(value: 'free' | 'starter' | 'pro') => handlePlanChange(appUser.id, value)}
+                        defaultValue={searchedUser.plan || 'free'}
+                        onValueChange={(value: 'free' | 'starter' | 'pro') => handlePlanChange(searchedUser.id, value)}
                       >
                         <SelectTrigger className="w-[120px]">
                           <SelectValue placeholder="Select plan" />
@@ -127,7 +202,13 @@ export default function AdminClient() {
                       </Select>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                 <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      No user searched yet.
+                    </TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </CardContent>
