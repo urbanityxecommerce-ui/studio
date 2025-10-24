@@ -1,14 +1,15 @@
+
 'use client';
 
 import AppLayout from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { CheckCircle, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const whatsAppNumber = "7478802433";
 
-const benefits = [
+const proBenefits = [
     "Personalized 1-on-1 WhatsApp Guidance",
     "Advanced SEO & Content Strategy",
     "Custom Thumbnail Design Service",
@@ -17,79 +18,131 @@ const benefits = [
     "Outrank Your Competitors",
 ];
 
-const pricing: { [key: string]: { price: string; currency: string } } = {
-    'en-IN': { price: '₹1499/month', currency: 'INR' },
-    'en-US': { price: '$19/month', currency: 'USD' },
-    'default': { price: '₹1499/month', currency: 'INR' },
+const starterBenefits = [
+    "AI-Powered Content Ideas",
+    "Keyword Research Tool",
+    "Competitor Analysis",
+    "Thumbnail Optimization Suggestions",
+    "Community Support",
+];
+
+const pricing = {
+    'en-IN': {
+        starter: { price: '₹189/month', currency: 'INR' },
+        pro: { price: '₹999/month', currency: 'INR' },
+    },
+    'en-US': {
+        starter: { price: '$4/month', currency: 'USD' },
+        pro: { price: '$15/month', currency: 'USD' },
+    },
+    'default': {
+        starter: { price: '₹189/month', currency: 'INR' },
+        pro: { price: '₹999/month', currency: 'INR' },
+    },
 };
 
+type PlanType = 'starter' | 'pro';
 
 export default function UpgradePage() {
-    const [displayPrice, setDisplayPrice] = useState(pricing.default.price);
-    const [whatsappUrl, setWhatsappUrl] = useState('');
+    const [displayPrices, setDisplayPrices] = useState(pricing.default);
+    const [whatsappUrls, setWhatsappUrls] = useState({ starter: '', pro: '' });
 
     useEffect(() => {
-        // This runs only on the client
         const userLang = navigator.language;
-        let selectedPrice = pricing.default;
+        let selectedPrices = pricing.default;
 
-        if (userLang.includes('IN')) {
-             selectedPrice = pricing['en-IN'];
-        } else if (userLang.includes('US')) {
-             selectedPrice = pricing['en-US'];
+        if (userLang.toLowerCase().includes('in')) {
+             selectedPrices = pricing['en-IN'];
         } else {
-            // Fallback for other international users
-             selectedPrice = pricing['en-US'];
+             selectedPrices = pricing['en-US'];
         }
 
-        setDisplayPrice(selectedPrice.price);
+        setDisplayPrices(selectedPrices);
 
-        const message = `Hi! I'm interested in upgrading to the CreatorX SEO premium monthly subscription for ${selectedPrice.price}.\n\nPlease let me know the next steps!`;
-        setWhatsappUrl(`https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`);
+        const starterMessage = `Hi! I'm interested in upgrading to the CreatorX SEO *Starter Plan* for ${selectedPrices.starter.price}.\n\nPlease let me know the next steps!`;
+        const proMessage = `Hi! I'm interested in upgrading to the CreatorX SEO *Pro Plan* for ${selectedPrices.pro.price}.\n\nPlease let me know the next steps!`;
+        
+        setWhatsappUrls({
+            starter: `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(starterMessage)}`,
+            pro: `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(proMessage)}`,
+        });
 
     }, []);
 
-    const handleUpgradeClick = () => {
-        if (whatsappUrl) {
-            window.open(whatsappUrl, "_blank");
+    const handleUpgradeClick = (plan: PlanType) => {
+        const url = whatsappUrls[plan];
+        if (url) {
+            window.open(url, "_blank");
         }
     };
 
     return (
         <AppLayout>
             <div className="flex flex-col items-center text-center space-y-12">
-                <header className="space-y-4 max-w-2xl">
+                <header className="space-y-4 max-w-3xl">
                     <Zap className="mx-auto h-16 w-16 text-primary animate-pulse" />
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">Unlock Your Full Potential</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">Choose Your Plan & Unlock Your Potential</h1>
                     <p className="text-lg text-muted-foreground">
-                        Go premium to get personalized, 1-on-1 expert guidance that goes beyond automated tools. Let's grow your channel together.
+                        Whether you're just starting out or ready to go pro, we have a plan that fits your needs. Let's grow your channel together.
                     </p>
                 </header>
 
-                <Card className="w-full max-w-2xl text-left shadow-2xl">
-                    <CardHeader>
-                        <CardTitle className="text-2xl">Premium Subscription</CardTitle>
-                        <CardDescription>Everything you need to succeed, all in one place.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-3">
-                            {benefits.map((benefit, index) => (
-                                <div key={index} className="flex items-center gap-3">
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                    <span className="text-foreground">{benefit}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="text-center pt-4">
-                            <p className="text-4xl font-bold tracking-tight">{displayPrice}</p>
-                            <p className="text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
-                        </div>
-                         <Button onClick={handleUpgradeClick} size="lg" className="w-full text-lg h-12 mt-4" disabled={!whatsappUrl}>
-                            <Zap className="mr-2 h-5 w-5" />
-                            Upgrade Now & Chat on WhatsApp
-                        </Button>
-                    </CardContent>
-                </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                    {/* Starter Plan Card */}
+                    <Card className="flex flex-col text-left shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Starter Plan</CardTitle>
+                            <CardDescription>Essential tools for new creators.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6 flex-grow">
+                             <div className="text-left pt-4">
+                                <p className="text-4xl font-bold tracking-tight">{displayPrices.starter.price}</p>
+                                <p className="text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
+                            </div>
+                            <div className="space-y-3">
+                                {starterBenefits.map((benefit, index) => (
+                                    <div key={index} className="flex items-center gap-3">
+                                        <CheckCircle className="h-5 w-5 text-green-500" />
+                                        <span className="text-foreground">{benefit}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleUpgradeClick('starter')} size="lg" className="w-full text-lg h-12 mt-4" disabled={!whatsappUrls.starter} variant="outline">
+                                Get Started
+                            </Button>
+                        </CardFooter>
+                    </Card>
+
+                    {/* Pro Plan Card */}
+                    <Card className="flex flex-col text-left shadow-2xl border-2 border-primary ring-4 ring-primary/20">
+                         <CardHeader>
+                            <CardTitle className="text-2xl">Pro Plan</CardTitle>
+                            <CardDescription>For creators ready to dominate their niche.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6 flex-grow">
+                             <div className="text-left pt-4">
+                                <p className="text-4xl font-bold tracking-tight">{displayPrices.pro.price}</p>
+                                <p className="text-sm text-muted-foreground">Billed monthly. Cancel anytime.</p>
+                            </div>
+                            <div className="space-y-3">
+                                {proBenefits.map((benefit, index) => (
+                                    <div key={index} className="flex items-center gap-3">
+                                        <CheckCircle className="h-5 w-5 text-green-500" />
+                                        <span className="text-foreground">{benefit}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => handleUpgradeClick('pro')} size="lg" className="w-full text-lg h-12 mt-4" disabled={!whatsappUrls.pro}>
+                                <Zap className="mr-2 h-5 w-5" />
+                                Go Pro
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </div>
 
                 <div className="max-w-2xl text-center">
                     <p className="text-sm text-muted-foreground">
