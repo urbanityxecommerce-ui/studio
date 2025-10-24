@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, serverTimestamp } from "firebase/firestore";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +30,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/firebase";
+import { useAuth, useFirestore } from "@/firebase";
 import { Logo } from "../icons";
+import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
@@ -44,6 +47,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function SignupClient() {
   const { toast } = useToast();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -71,16 +75,32 @@ export default function SignupClient() {
     }
   };
 
+  async function createUserData(user: any, data: FormValues) {
+    const userRef = doc(firestore, 'users', user.uid);
+    const userData = {
+      id: user.uid,
+      email: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+    setDocumentNonBlocking(userRef, userData, { merge: true });
+  }
 
   async function onSubmit(data: FormValues) {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      await updateProfile(userCredential.user, {
+      const user = userCredential.user;
+      
+      await updateProfile(user, {
         displayName: `${data.firstName} ${data.lastName}`
       });
 
-      const idToken = await userCredential.user.getIdToken();
+      await createUserData(user, data);
+      
+      const idToken = await user.getIdToken();
       await setSessionCookie(idToken);
 
       toast({
@@ -93,6 +113,8 @@ export default function SignupClient() {
       let description = "There was a problem with your signup request.";
       if (error.code === 'auth/email-already-in-use') {
         description = "This email is already in use. Please log in instead.";
+      } else if (error.code === 'auth/operation-not-allowed') {
+        description = "Email/Password sign-up is not enabled. Please contact support.";
       } else {
         description = error.message;
       }
