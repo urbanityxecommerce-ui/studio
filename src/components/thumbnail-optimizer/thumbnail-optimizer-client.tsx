@@ -121,32 +121,38 @@ export default function ThumbnailOptimizerClient() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                 <FormItem>
-                  <FormLabel>Thumbnail</FormLabel>
-                  <FormControl>
-                    <div className="relative flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted bg-card p-8 hover:bg-muted/50">
-                        {preview ? (
-                             <Image src={preview} alt="Thumbnail preview" width={320} height={180} className="rounded-md object-cover" />
-                        ) : (
-                            <div className="text-center">
-                                <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <p className="mt-2 text-sm text-muted-foreground">
-                                Click to upload or drag and drop
-                                </p>
-                                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP (max. 800x400px)</p>
-                            </div>
-                        )}
-                      <Input
-                        type="file"
-                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                        accept="image/png, image/jpeg, image/webp"
-                        {...thumbnailRef}
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                 <FormField
+                  control={form.control}
+                  name="thumbnail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Thumbnail</FormLabel>
+                      <FormControl>
+                        <div className="relative flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted bg-card p-8 hover:bg-muted/50">
+                            {preview ? (
+                                <Image src={preview} alt="Thumbnail preview" width={320} height={180} className="rounded-md object-cover" />
+                            ) : (
+                                <div className="text-center">
+                                    <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                    Click to upload or drag and drop
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">PNG, JPG, WEBP (max. 800x400px)</p>
+                                </div>
+                            )}
+                          <Input
+                            type="file"
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                            accept="image/png, image/jpeg, image/webp"
+                            {...thumbnailRef}
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="videoTitle"
@@ -238,4 +244,3 @@ function AnalysisItem({title, content}: {title: string, content: string}){
         </div>
     )
 }
-
