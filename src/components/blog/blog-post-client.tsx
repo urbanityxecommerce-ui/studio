@@ -1,9 +1,9 @@
 
 'use client';
 
-import { placeholderBlogPosts, type BlogPost } from '@/lib/placeholder-blog';
-import { notFound, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { type BlogPost } from '@/lib/placeholder-blog';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +15,7 @@ import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { collection, serverTimestamp, query, orderBy, doc, arrayUnion } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { format } from 'date-fns';
-import { Calendar, Loader2, MessageCircle, Send, Share2, User as UserIcon } from 'lucide-react';
+import { Calendar, Loader2, MessageCircle, Send, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
 
@@ -28,25 +28,13 @@ type BlogComment = {
     createdAt: any;
 }
 
-export default function BlogPostClient({ slug }: { slug: string }) {
-  const [post, setPost] = useState<BlogPost | null>(null);
+export default function BlogPostClient({ post }: { post: BlogPost }) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const auth = useAuth();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const foundPost = placeholderBlogPosts.find((p) => p.slug === slug);
-    if (foundPost) {
-      setPost(foundPost);
-    } else {
-      // In a real app, you would fetch from Firestore here
-      notFound();
-    }
-  }, [slug]);
 
   const commentsQuery = useMemoFirebase(
     () => post ? query(collection(firestore, 'blogPosts', post.id, 'comments'), orderBy('createdAt', 'asc')) : null,
@@ -76,7 +64,6 @@ export default function BlogPostClient({ slug }: { slug: string }) {
         const commentsCol = collection(firestore, 'blogPosts', post.id, 'comments');
         addDocumentNonBlocking(commentsCol, commentData);
         
-        // Also update the post document to register the comment for potential triggers/counts
         const postRef = doc(firestore, 'blogPosts', post.id);
         updateDocumentNonBlocking(postRef, {
             commenters: arrayUnion(user.uid)
@@ -117,13 +104,6 @@ export default function BlogPostClient({ slug }: { slug: string }) {
     }
   };
 
-  if (!post) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -150,7 +130,7 @@ export default function BlogPostClient({ slug }: { slug: string }) {
 
         <Image src={post.coverImageUrl} alt={post.title} width={1200} height={600} className="rounded-lg object-cover aspect-video w-full" />
         
-        <div className="prose dark:prose-invert max-w-none text-lg" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
         
         <Separator />
         
