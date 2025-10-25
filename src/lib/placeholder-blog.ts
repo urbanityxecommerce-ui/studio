@@ -63,7 +63,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>It wasn't luck. It was a plan. We stopped being lazy. We respected the "packaging." We stopped guessing and started answering. And we were consistent. If your channel feels dead, it's probably not. It's just waiting for you to follow the right plan.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1579586337278-35d19d1dc513?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['YouTube', 'Growth', 'Strategy', 'Case Study'],
     createdAt: '2024-07-25T11:00:00Z',
   },
@@ -134,7 +134,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Reading about these strategies is one thing, but implementing them is what drives growth. Many of the principles discussed here can be streamlined and amplified using the tools right here in CreatorX SEO. Use the <strong>Competitor Analysis</strong> tool to find those topic gaps, test your title and thumbnail ideas with the <strong>Thumbnail Optimizer</strong>, and never run out of inspiration with the <strong>Content Ideas</strong> generator. Your next viral hit is waiting for you to build it.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
     createdAt: '2024-07-20T10:00:00Z',
   },
@@ -183,7 +183,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Mastering Reel SEO requires a blend of creativity and data-driven strategy. To fast-track your success, the <strong>Reel SEO</strong> tool inside CreatorX is built to generate optimized captions with compelling calls-to-action in seconds. Stop guessing and start ranking. Give it a try and see how quickly you can amplify your reach on the platform.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1616469829935-c2f334624b38?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
   },
@@ -237,7 +237,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>This entire process of strategic analysis can be time-consuming, but it's essential for growth. That's why we built the <strong>Competitor Analysis</strong> tool directly into this app. Instead of manually digging through channels, you can get a detailed breakdown of top videos, headline patterns, and common tags in a single click. It does the data-mining for you, so you can spend your time on what truly matters: creating better content.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1599310892021-9a3d8389326f?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['Strategy', 'SEO', 'Analysis', 'Marketing'],
     createdAt: '2024-07-15T09:00:00Z',
   }
@@ -247,3 +247,6 @@ export const placeholderBlogPosts: BlogPost[] = [
 
     
 
+
+
+    
