@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -25,18 +26,18 @@ export type GenerateContentIdeasInput = z.infer<typeof GenerateContentIdeasInput
 
 const ContentIdeaSchema = z.object({
   title: z.string().describe('A one-line title for the content idea.'),
-  seoTitleVariations: z.array(z.string()).length(5).describe('Five SEO-optimized variations of the title.'),
+  seoTitleVariations: z.array(z.string()).describe('Five SEO-optimized variations of the title.'),
   viralHook: z.string().describe('A 10-second viral hook to grab attention.'),
-  thumbnailConcepts: z.array(z.string()).length(3).describe('Three thumbnail concepts with text and composition suggestions.'),
+  thumbnailConcepts: z.array(z.string()).describe('Three thumbnail concepts with text and composition suggestions.'),
   shortDescription: z.string().max(150).describe('A short description of the content, strictly under 150 characters.'),
-  tags: z.array(z.string()).length(5).describe('Five relevant tags/hashtags.'),
-  timestampedStructurePoints: z.array(z.string()).length(3).describe('Three timestamped structure points for the content.'),
+  tags: z.array(z.string()).describe('Five relevant tags/hashtags.'),
+  timestampedStructurePoints: z.array(z.string()).describe('Three timestamped structure points for the content.'),
   repurposeSuggestion: z.string().describe('A suggestion for repurposing the content.'),
   difficultyScore: z.number().describe('A difficulty score to determine how hard the content would be to create.'),
 });
 
 const GenerateContentIdeasOutputSchema = z.object({
-  ideas: z.array(ContentIdeaSchema).length(5).describe('A list of 5 content ideas.'),
+  ideas: z.array(ContentIdeaSchema).describe('A list of content ideas.'),
 });
 
 export type GenerateContentIdeasOutput = z.infer<typeof GenerateContentIdeasOutputSchema>;
@@ -84,7 +85,7 @@ const generateContentIdeasFlow = ai.defineFlow(
   async input => {
     const {output} = await generateContentIdeasPrompt(input);
     
-    if (!output) {
+    if (!output || !output.ideas) {
       throw new Error("Failed to generate ideas. The output was empty.");
     }
 
