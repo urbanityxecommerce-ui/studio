@@ -75,8 +75,6 @@ export const placeholderBlogPosts: BlogPost[] = [
           <li><strong>The "Prove Me Wrong" Prompt:</strong> "I'm making a bold claim: I think this new software is a complete waste of money for beginners. If you disagree, tell me why in the comments. I'll read every one."</li>
           <li><strong>The Advice-Seeker:</strong> "This is the method I used, and it worked, but I know there are experts watching. What's the one thing you would have done differently? I want to learn."</li>
       </ul>
-      <p>These prompts do more than just generate comments. They start a conversation, build a community, and signal to YouTube that your video is a central hub for discussion in your niche—a key indicator for long-term promotion.</p>
-
       <h3 class="font-extrabold text-2xl tracking-tight mt-12 mb-4">Turn Strategy Into Action</h3>
       <p>Reading about these strategies is one thing, but implementing them is what drives growth. Many of the principles discussed here can be streamlined and amplified using the tools right here in CreatorX SEO. Use the <strong>Competitor Analysis</strong> tool to find those topic gaps, test your title and thumbnail ideas with the <strong>Thumbnail Optimizer</strong>, and never run out of inspiration with the <strong>Content Ideas</strong> generator. Your next viral hit is waiting for you to build it.</p>
     `,
@@ -134,7 +132,7 @@ export const placeholderBlogPosts: BlogPost[] = [
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
   },
-   {
+  {
     id: '3',
     title: 'Competitor Analysis: A Step-by-Step Guide to Ethically Steal What Works',
     slug: 'competitor-analysis-guide-to-ethically-steal-what-works',
@@ -180,8 +178,6 @@ export const placeholderBlogPosts: BlogPost[] = [
         <li><strong>Inject More Personality:</strong> Can you be funnier, more relatable, more inspiring, or more vulnerable? Sometimes the "Plus One" is simply a more engaging host.</li>
         <li><strong>Target a Niche-Down Audience:</strong> If their video is "Beginner Guitar Lessons," you can create "The First 5 Chords Every *Acoustic* Guitar Player Should Learn." Specialization is a powerful form of value.</li>
       </ul>
-      <p>By systematically analyzing what works and then intentionally adding your unique value, you stop being a follower and start positioning yourself as the new leader in your niche.</p>
-
       <h3 class="font-extrabold text-2xl tracking-tight mt-12 mb-4">Put Your Research on Autopilot</h3>
       <p>This entire process of strategic analysis can be time-consuming, but it's essential for growth. That's why we built the <strong>Competitor Analysis</strong> tool directly into this app. Instead of manually digging through channels, you can get a detailed breakdown of top videos, headline patterns, and common tags in a single click. It does the data-mining for you, so you can spend your time on what truly matters: creating better content.</p>
     `,
@@ -191,3 +187,5 @@ export const placeholderBlogPosts: BlogPost[] = [
     createdAt: '2024-07-15T09:00:00Z',
   }
 ];
+
+    
