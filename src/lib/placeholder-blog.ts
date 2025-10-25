@@ -183,7 +183,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>This entire process of strategic analysis can be time-consuming, but it's essential for growth. That's why we built the <strong>Competitor Analysis</strong> tool directly into this app. Instead of manually digging through channels, you can get a detailed breakdown of top videos, headline patterns, and common tags in a single click. It does the data-mining for you, so you can spend your time on what truly matters: creating better content.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?q=80&w=2070&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1585252425429-91743b1a99a4?q=80&w=2071&auto=format&fit=crop',
     tags: ['Strategy', 'SEO', 'Analysis', 'Marketing'],
     createdAt: '2024-07-15T09:00:00Z',
   }
