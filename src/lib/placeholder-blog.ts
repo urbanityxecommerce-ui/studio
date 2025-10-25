@@ -14,8 +14,8 @@ export type BlogPost = {
 export const placeholderBlogPosts: BlogPost[] = [
   {
     id: '1',
-    title: 'The 2025 YouTube Playbook: 5 In-Depth Strategies to Go Viral',
-    slug: '5-strategies-to-going-viral-on-youtube-in-2025',
+    title: 'The 2025 YouTube Playbook: 5 Secrets to Go Viral',
+    slug: '5-secrets-to-going-viral-on-youtube-in-2025',
     excerpt: 'Stop guessing what the algorithm wants. We\'re breaking down the deep-level, psychological strategies that top creators use to engineer viral hits. This is your new masterclass.',
     content: `
       <p class="text-xl text-muted-foreground">If you believe going viral on YouTube in 2025 is about luck, you've already lost. The platform is a sophisticated ecosystem that rewards creators who master not just content, but human psychology. The algorithm doesn't "pick" winners; it amplifies what viewers are already telling it is a winner. This guide will teach you how to speak the algorithm's language by captivating your human audience.</p>
