@@ -3,7 +3,7 @@
 
 import { type BlogPost } from '@/lib/placeholder-blog';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,7 @@ import { useAuth, useDoc, useFirestore, useUser, useMemoFirebase } from '@/fireb
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, serverTimestamp, query, orderBy, doc, arrayUnion } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { Calendar, Loader2, MessageCircle, Send, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
@@ -35,6 +35,16 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+
+  const [displayDate, setDisplayDate] = useState('');
+  const [isoDate, setIsoDate] = useState('');
+
+  useEffect(() => {
+    // This code runs only on the client, avoiding hydration mismatch
+    const date = subDays(new Date(), 3);
+    setDisplayDate(format(date, 'MMMM d, yyyy'));
+    setIsoDate(date.toISOString());
+  }, []);
 
   const commentsQuery = useMemoFirebase(
     () => post ? query(collection(firestore, 'blogPosts', post.id, 'comments'), orderBy('createdAt', 'asc')) : null,
@@ -123,7 +133,11 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
             </div>
             <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <time dateTime={post.createdAt}>{format(new Date(post.createdAt), 'MMMM d, yyyy')}</time>
+                {displayDate ? (
+                    <time dateTime={isoDate}>{displayDate}</time>
+                ) : (
+                    <span>Loading...</span>
+                )}
             </div>
           </div>
         </header>

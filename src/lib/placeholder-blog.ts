@@ -77,7 +77,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       </ul>
       <p>These prompts do more than just generate comments. They start a conversation, build a community, and signal to YouTube that your video is a central hub for discussion in your niche—a key indicator for long-term promotion.</p>
     `,
-    authorName: 'Alex Cruz',
+    authorName: 'CreatorX',
     coverImageUrl: 'https://picsum.photos/seed/youtube-viral/1200/600',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
     createdAt: '2024-07-20T10:00:00Z',
@@ -123,7 +123,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <h2 class="font-bold text-3xl mt-8 mb-4">5. Your Profile is Your Landing Page: Optimize Your Bio and Name</h2>
       <p>Your Reel can be perfect, but if your profile doesn't seal the deal, you lose the follow. The "Name" field in your Instagram bio is searchable! It should not just be your name. It should be "Your Name | Your Niche." For example, "Alex Cruz | YouTube Growth Coach." Now, when people search for "YouTube Coach," your profile is more likely to appear. Your bio should then immediately state the value you provide and who you provide it for, with a clear call to action to your website or other platforms.</p>
     `,
-    authorName: 'Maria Garcia',
+    authorName: 'CreatorX',
     coverImageUrl: 'https://picsum.photos/seed/instagram-reel/1200/600',
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
@@ -176,7 +176,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       </ul>
       <p>By systematically analyzing what works and then intentionally adding your unique value, you stop being a follower and start positioning yourself as the new leader in your niche.</p>
     `,
-    authorName: 'David Chen',
+    authorName: 'CreatorX',
     coverImageUrl: 'https://picsum.photos/seed/competitor-analysis/1200/600',
     tags: ['Strategy', 'SEO', 'Analysis', 'Marketing'],
     createdAt: '2024-07-15T09:00:00Z',

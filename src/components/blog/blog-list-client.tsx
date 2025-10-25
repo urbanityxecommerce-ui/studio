@@ -7,9 +7,20 @@ import { ArrowRight, Calendar, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 export default function BlogListClient() {
+  const [displayDate, setDisplayDate] = useState('');
+  const [isoDate, setIsoDate] = useState('');
+
+  useEffect(() => {
+    // This code runs only on the client, avoiding hydration mismatch
+    const date = subDays(new Date(), 3);
+    setDisplayDate(format(date, 'MMM d, yyyy'));
+    setIsoDate(date.toISOString());
+  }, []);
+
   return (
     <div className="space-y-8">
       <header className="space-y-2 text-center">
@@ -53,7 +64,11 @@ export default function BlogListClient() {
                 </div>
                 <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    <time dateTime={post.createdAt}>{format(new Date(post.createdAt), 'MMM d, yyyy')}</time>
+                    {displayDate ? (
+                        <time dateTime={isoDate}>{displayDate}</time>
+                    ) : (
+                        <span>Loading...</span>
+                    )}
                 </div>
             </CardFooter>
           </Card>
