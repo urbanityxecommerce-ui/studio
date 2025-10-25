@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { CheckCircle, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import ClientOnly from '@/components/client-only';
 
 const whatsAppNumber = "7478802433";
 
@@ -42,7 +43,7 @@ const pricing = {
 
 type PlanType = 'starter' | 'pro';
 
-export default function UpgradePage() {
+function UpgradeClient() {
     const [displayPrices, setDisplayPrices] = useState(pricing.default);
     const [whatsappUrls, setWhatsappUrls] = useState({ starter: '', pro: '' });
 
@@ -151,4 +152,12 @@ export default function UpgradePage() {
             </div>
         </AppLayout>
     );
+}
+
+export default function UpgradePage() {
+    return (
+        <ClientOnly>
+            <UpgradeClient />
+        </ClientOnly>
+    )
 }
