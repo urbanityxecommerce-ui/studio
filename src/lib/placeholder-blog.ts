@@ -13,6 +13,59 @@ export type BlogPost = {
 
 export const placeholderBlogPosts: BlogPost[] = [
   {
+    id: '4',
+    title: 'How We Revived a "Dead" YouTube Channel in 30 Days (Our Exact 4-Step Plan)',
+    slug: 'revived-dead-youtube-channel-30-days',
+    excerpt: 'A real-world case study on bringing a channel back from the brink of deletion using a simple, 4-step system. No luck, just strategy.',
+    content: `
+      <p class="text-xl leading-8 text-muted-foreground">Let's talk about my friend, "Rahul." He's an incredibly creative cook, passionate about sharing his family's recipes. He started a YouTube channel, but after a year, he was on the verge of quitting. His videos, which he spent days creating, would get stuck at 50-60 views. It was soul-crushing.</p>
+      <p>He was convinced that growth was impossible for a small channel. I told him, "It's not luck, man. It's a system. And your system is broken." He skeptically agreed to a 30-day experiment. We didn't change his topic or buy fancy gear; we just changed his process. Here's the exact 4-step plan we used to bring his "dead" channel back to life.</p>
+      
+      <h2>Step 1: The "Brutal Honesty" Audit (And Facing the Ugly Truth)</h2>
+      <p>Before we could fix the problem, we had to find it. The issue was a giant, flashing neon sign: his thumbnails and titles were terrible. They were random, dark, blurry screenshots with no text. His titles were things like "My New Cooking Vlog - Part 4."</p>
+      <blockquote>I asked him one simple question: "Be honest. If you were scrolling through YouTube tired after work, would you ever click on this?" His answer was, "Probably not."</blockquote>
+      <p>That became our Golden Rule: <strong>"If we wouldn't click it ourselves, we don't post it."</strong> We had to accept that on YouTube, you aren't just a cook; you're a marketer. Your video starts with the thumbnail and title, and we had been lazy.</p>
+
+      <h2>Step 2: We Stopped Guessing and Started Answering</h2>
+      <p>Rahul's next big mistake was making videos for "everyone." That's not an audience. So, we stopped guessing and started answering questions people were actually asking. We spent hours doing keyword research using just the YouTube search bar.</p>
+      <p>We typed in "how to make..." and YouTube instantly showed us what people wanted:</p>
+      <ul>
+        <li>"how to make paneer tikka at home"</li>
+        <li>"how to make crispy french fries like McDonalds"</li>
+        <li>"how to make dal makhani restaurant style"</li>
+      </ul>
+      <p>These weren't just ideas; this was evidence. People had specific problems. Our new rule was: <strong>We will only make videos that solve a problem people are already searching for.</strong></p>
+      <p>We just used the search bar, but if you want to find 10x more keywords and see what your competitors are already ranking for, this is where a dedicated tool is a game-changer. The <strong>Keyword Research</strong> and <strong>Competitor Analysis</strong> features in this app are designed to automate this entire process, giving you a huge advantage.</p>
+      
+      <h2>Step 3: The 30-Day "Consistency Grind" (The Hardest Part)</h2>
+      <p>Rahul was posting whenever he "felt like it." The YouTube algorithm, which loves consistency, had forgotten he existed. We made a simple, brutal pact: upload one new video, every single day, for 30 days straight. It was exhausting.</p>
+      <p>The first week was depressing. The new videos got maybe 70-80 views. But around Day 15, we saw a twitch in his "Realtime Analytics." His "Restaurant Style Dal Makhani" video got 20 views in one hour. This was a signal. The algorithm was finally starting to "test" his video with a new audience. That one twitch gave us the motivation to finish the grind.</p>
+
+      <h2>Step 4: We Became Obsessed with Thumbnails</h2>
+      <p>This was the final, and maybe most important, piece. If the "packaging" is boring, nobody will click. We promised to spend at least 30 minutes on every single thumbnail using Canva (it's free!).</p>
+      <p>Our new rules for "Clickable" Thumbnails were simple:</p>
+      <ul>
+        <li><strong>The "Money Shot" First:</strong> The photo had to be bright, high-quality, and make you hungry. A close-up of the delicious, finished dish.</li>
+        <li><strong>Big, Bold Text (3-4 Words MAX):</strong> Huge, easy-to-read text. Not "How to Make Dal Makhani at Home," but "<strong>BEST DAL MAKHANI</strong>" or "<strong>SO CRISPY!</strong>" Something you can read in a split-second on a phone.</li>
+        <li><strong>Color Pop:</strong> We put bright yellow or red outlines around the text to make it "pop" off the screen. Our <strong>Thumbnail Optimizer</strong> is built to analyze these very factors for you.</li>
+      </ul>
+
+      <h3>The Results After 30 Days? (The Moment of Truth)</h3>
+      <p>Did he wake up on Day 31 with a million subscribers? No. This isn't a movie. But here are the real, honest results:</p>
+      <ul>
+        <li>His average views went from ~50 per video to over <strong>400-500 per video</strong>.</li>
+        <li>Two of his new videos (the "Dal Makhani" and "Crispy Fries") took off, breaking <strong>10,000 views</strong>. They still get hundreds of new views daily.</li>
+        <li>His subscribers went from 500 to <strong>872</strong>. He gained more in 30 days than in the entire previous year.</li>
+        <li>Most importantly: His channel was no longer "dead." It was alive. He finally saw the magic words in his analytics: <strong>"Your videos are being recommended by YouTube."</strong></li>
+      </ul>
+      <p>It wasn't luck. It was a plan. We stopped being lazy, respected the "packaging," stopped guessing, and were consistent. If your channel feels dead, it's probably not. It's just waiting for you to follow the right plan.</p>
+    `,
+    authorName: 'CreatorX',
+    coverImageUrl: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=600&h=400&auto=format&fit=crop',
+    tags: ['YouTube', 'Growth', 'Strategy', 'Case Study'],
+    createdAt: '2024-07-25T11:00:00Z',
+  },
+  {
     id: '1',
     title: 'The 2025 YouTube Playbook: 5 Secrets to Go Viral',
     slug: '5-secrets-to-going-viral-on-youtube-in-2025',
@@ -187,5 +240,7 @@ export const placeholderBlogPosts: BlogPost[] = [
     createdAt: '2024-07-15T09:00:00Z',
   }
 ];
+
+    
 
     
