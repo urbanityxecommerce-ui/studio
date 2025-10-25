@@ -39,12 +39,14 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
 
   const [displayDate, setDisplayDate] = useState('');
   const [isoDate, setIsoDate] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
 
   useEffect(() => {
     // This code runs only on the client, avoiding hydration mismatch
     const date = subDays(new Date(), 3);
     setDisplayDate(format(date, 'MMMM d, yyyy'));
     setIsoDate(date.toISOString());
+    setCurrentUrl(window.location.href);
   }, []);
 
   const commentsQuery = useMemoFirebase(
@@ -91,18 +93,18 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
   };
 
   const handleShare = async () => {
-    if (!post) return;
+    if (!post || !currentUrl) return;
     const shareData = {
       title: post.title,
       text: `Check out this article from CreatorX SEO: ${post.title}`,
-      url: window.location.href,
+      url: currentUrl,
     };
     try {
       if (navigator.share) {
         await navigator.share(shareData);
         toast({ title: "Article Shared!", description: "Thanks for sharing." });
       } else {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(currentUrl);
         toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
       }
     } catch (error) {
@@ -159,7 +161,7 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
         
         <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">Join the Conversation</h3>
-            <Button variant="outline" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" />Share</Button>
+            <Button variant="outline" onClick={handleShare} disabled={!currentUrl}><Share2 className="mr-2 h-4 w-4" />Share</Button>
         </div>
         
         {/* Comments Section */}
