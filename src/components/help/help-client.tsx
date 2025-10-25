@@ -33,8 +33,8 @@ export default function HelpClient() {
         answer: "Currently, the Rank Tracker provides a realistic *simulation* of ranking data. Since accessing live Google search results is complex and costly, this feature is designed to give you a powerful example of what a rank report looks like. We are working hard on launching real-time tracking soon, and your support helps us get there faster!"
     },
     {
-        question: "The AI-generated ideas or captions feel a bit generic. How can I improve them?",
-        answer: "The quality of AI generation depends heavily on the quality of your input. To get more unique and tailored results, try to be as specific as possible in the forms. For example, instead of 'Tech' for Content Ideas, try something more specific like 'Beginner tips for iPhone 15 camera'."
+        question: "Why do I get an error when using Competitor Analysis?",
+        answer: "The Competitor Analysis feature requires a YouTube Data API key. If you see an error, it's likely because the key is missing or invalid. Please go to the Settings page, get a free key from the Google Cloud Console (there's a link there to help you), and enter it into the API key field."
     },
     {
       question: "Where can I suggest a new feature or report a problem?",
