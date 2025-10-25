@@ -63,6 +63,7 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type Idea = GenerateContentIdeasOutput["ideas"][0];
 
 export default function ContentIdeasClient() {
   const { toast } = useToast();
@@ -108,6 +109,75 @@ export default function ContentIdeasClient() {
       setIsLoading(false);
     }
   }
+
+  const downloadJSON = (data: Idea[]) => {
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(data, null, 2)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = "content-ideas.json";
+    link.click();
+    toast({ title: "JSON Exported", description: "Your ideas have been downloaded." });
+  };
+
+  const escapeCsvCell = (cell: string | string[] | number) => {
+    if (typeof cell === 'number') return cell.toString();
+    const cellValue = Array.isArray(cell) ? cell.join('; ') : cell;
+    let escaped = cellValue.replace(/"/g, '""');
+    if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
+      escaped = `"${escaped}"`;
+    }
+    return escaped;
+  };
+  
+  const downloadCSV = (data: Idea[]) => {
+    const headers = [
+      "Title", "Viral Hook", "Short Description", "Repurpose Suggestion", "Difficulty Score",
+      "SEO Title 1", "SEO Title 2", "SEO Title 3", "SEO Title 4", "SEO Title 5",
+      "Thumbnail Concept 1", "Thumbnail Concept 2", "Thumbnail Concept 3",
+      "Structure Point 1", "Structure Point 2", "Structure Point 3",
+      "Tags"
+    ];
+
+    const rows = data.map(idea => [
+      escapeCsvCell(idea.title),
+      escapeCsvCell(idea.viralHook),
+      escapeCsvCell(idea.shortDescription),
+      escapeCsvCell(idea.repurposeSuggestion),
+      escapeCsvCell(idea.difficultyScore),
+      escapeCsvCell(idea.seoTitleVariations[0] || ""),
+      escapeCsvCell(idea.seoTitleVariations[1] || ""),
+      escapeCsvCell(idea.seoTitleVariations[2] || ""),
+      escapeCsvCell(idea.seoTitleVariations[3] || ""),
+      escapeCsvCell(idea.seoTitleVariations[4] || ""),
+      escapeCsvCell(idea.thumbnailConcepts[0] || ""),
+      escapeCsvCell(idea.thumbnailConcepts[1] || ""),
+      escapeCsvCell(idea.thumbnailConcepts[2] || ""),
+      escapeCsvCell(idea.timestampedStructurePoints[0] || ""),
+      escapeCsvCell(idea.timestampedStructurePoints[1] || ""),
+      escapeCsvCell(idea.timestampedStructurePoints[2] || ""),
+      escapeCsvCell(idea.tags.join(', ')),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "content-ideas.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({ title: "CSV Exported", description: "Your ideas have been downloaded." });
+  };
+
+  const handleFeatureComingSoon = () => {
+    toast({
+      title: "Feature Coming Soon!",
+      description: "This feature is under construction. Stay tuned!",
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -304,16 +374,16 @@ export default function ContentIdeasClient() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h2 className="text-2xl font-bold">{ideas.length} Ideas Generated</h2>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => downloadCSV(ideas)}>
                 <Download className="mr-2 h-4 w-4" /> CSV
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => downloadJSON(ideas)}>
                 <FileJson className="mr-2 h-4 w-4" /> JSON
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleFeatureComingSoon}>
                 <CalendarPlus className="mr-2 h-4 w-4" /> Calendar
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleFeatureComingSoon}>
                 <PlusSquare className="mr-2 h-4 w-4" /> Planner
               </Button>
             </div>
