@@ -100,21 +100,40 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
       text: `Check out this article from CreatorX SEO: ${post.title}`,
       url: currentUrl,
     };
-    try {
-      if (navigator.share) {
+    
+    // Use native share if available, otherwise fall back to clipboard
+    if (navigator.share) {
+      try {
         await navigator.share(shareData);
         toast({ title: "Article Shared!", description: "Thanks for sharing." });
-      } else {
-        await navigator.clipboard.writeText(currentUrl);
-        toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
+      } catch (error) {
+        // This can happen if the user cancels the share. We will fall back to copy.
+        console.warn('Native share failed, falling back to clipboard:', error);
+        try {
+          await navigator.clipboard.writeText(currentUrl);
+          toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
+        } catch (copyError) {
+          console.error('Failed to copy to clipboard:', copyError);
+          toast({
+            variant: "destructive",
+            title: "Could not share or copy",
+            description: "There was an error trying to share this article.",
+          });
+        }
       }
-    } catch (error) {
-      console.error('Error sharing:', error);
-      toast({
-        variant: "destructive",
-        title: "Could not share",
-        description: "There was an error trying to share this article.",
-      });
+    } else {
+        // Fallback for browsers that don't support navigator.share
+        try {
+          await navigator.clipboard.writeText(currentUrl);
+          toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
+        } catch (copyError) {
+          console.error('Failed to copy to clipboard:', copyError);
+          toast({
+            variant: "destructive",
+            title: "Could not copy link",
+            description: "There was an error trying to copy the link.",
+          });
+        }
     }
   };
 
