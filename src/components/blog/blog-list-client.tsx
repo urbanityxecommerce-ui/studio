@@ -20,6 +20,13 @@ export default function BlogListClient() {
     setDisplayDate(format(date, 'MMM d, yyyy'));
     setIsoDate(date.toISOString());
   }, []);
+  
+  const getImageHint = (tags: string[]) => {
+    if (tags.includes('YouTube')) return 'youtube growth';
+    if (tags.includes('Instagram')) return 'instagram seo';
+    if (tags.includes('Strategy')) return 'business strategy';
+    return 'content creation';
+  }
 
   return (
     <div className="space-y-8">
@@ -40,6 +47,7 @@ export default function BlogListClient() {
                 width={600}
                 height={400}
                 className="w-full h-48 object-cover"
+                data-ai-hint={getImageHint(post.tags)}
               />
             </Link>
             <CardHeader>
