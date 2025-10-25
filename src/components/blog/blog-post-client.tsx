@@ -18,6 +18,7 @@ import { format, subDays } from 'date-fns';
 import { Calendar, Loader2, MessageCircle, Send, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
+import { Logo } from '../icons';
 
 type BlogComment = {
     id?: string;
@@ -126,8 +127,16 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground">
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={`https://picsum.photos/seed/${post.authorName}/40/40`} alt={post.authorName} />
-                <AvatarFallback>{post.authorName.charAt(0)}</AvatarFallback>
+                {post.authorName === 'CreatorX' ? (
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    <Logo className="h-4 w-4" />
+                  </div>
+                ) : (
+                  <>
+                    <AvatarImage src={`https://picsum.photos/seed/${post.authorName}/40/40`} alt={post.authorName} />
+                    <AvatarFallback>{post.authorName.charAt(0)}</AvatarFallback>
+                  </>
+                )}
               </Avatar>
               <span>{post.authorName}</span>
             </div>
