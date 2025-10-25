@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -121,8 +122,13 @@ export default function ContentIdeasClient() {
     toast({ title: "JSON Exported", description: "Your ideas have been downloaded." });
   };
 
-  const escapeCsvCell = (cell: string | string[] | number) => {
-    if (typeof cell === 'number') return cell.toString();
+  const escapeCsvCell = (cell: string | string[] | number | null | undefined) => {
+    if (cell === null || cell === undefined) {
+      return '';
+    }
+    if (typeof cell === 'number') {
+      return cell.toString();
+    }
     const cellValue = Array.isArray(cell) ? cell.join('; ') : cell;
     let escaped = cellValue.replace(/"/g, '""');
     if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
@@ -146,17 +152,17 @@ export default function ContentIdeasClient() {
       escapeCsvCell(idea.shortDescription),
       escapeCsvCell(idea.repurposeSuggestion),
       escapeCsvCell(idea.difficultyScore),
-      escapeCsvCell(idea.seoTitleVariations[0] || ""),
-      escapeCsvCell(idea.seoTitleVariations[1] || ""),
-      escapeCsvCell(idea.seoTitleVariations[2] || ""),
-      escapeCsvCell(idea.seoTitleVariations[3] || ""),
-      escapeCsvCell(idea.seoTitleVariations[4] || ""),
-      escapeCsvCell(idea.thumbnailConcepts[0] || ""),
-      escapeCsvCell(idea.thumbnailConcepts[1] || ""),
-      escapeCsvCell(idea.thumbnailConcepts[2] || ""),
-      escapeCsvCell(idea.timestampedStructurePoints[0] || ""),
-      escapeCsvCell(idea.timestampedStructurePoints[1] || ""),
-      escapeCsvCell(idea.timestampedStructurePoints[2] || ""),
+      escapeCsvCell(idea.seoTitleVariations[0]),
+      escapeCsvCell(idea.seoTitleVariations[1]),
+      escapeCsvCell(idea.seoTitleVariations[2]),
+      escapeCsvCell(idea.seoTitleVariations[3]),
+      escapeCsvCell(idea.seoTitleVariations[4]),
+      escapeCsvCell(idea.thumbnailConcepts[0]),
+      escapeCsvCell(idea.thumbnailConcepts[1]),
+      escapeCsvCell(idea.thumbnailConcepts[2]),
+      escapeCsvCell(idea.timestampedStructurePoints[0]),
+      escapeCsvCell(idea.timestampedStructurePoints[1]),
+      escapeCsvCell(idea.timestampedStructurePoints[2]),
       escapeCsvCell(idea.tags.join(', ')),
     ]);
 
