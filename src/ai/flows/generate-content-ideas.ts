@@ -30,7 +30,7 @@ const ContentIdeaSchema = z.object({
   viralHook: z.string().describe('A 10-second viral hook to grab attention.'),
   thumbnailConcepts: z.array(z.string()).describe('Three thumbnail concepts with text and composition suggestions.'),
   shortDescription: z.string().max(150).describe('A short description of the content, strictly under 150 characters.'),
-  tags: z.array(z.string()).describe('Five relevant tags/hashtags.'),
+  tags: z.array(z.string()).describe("Five relevant keyword tags (without the '#' symbol)."),
   timestampedStructurePoints: z.array(z.string()).describe('Three timestamped structure points for the content.'),
   repurposeSuggestion: z.string().describe('A suggestion for repurposing the content.'),
   difficultyScore: z.number().describe('A difficulty score to determine how hard the content would be to create.'),
@@ -83,7 +83,7 @@ For the idea, provide the following, ensuring it feels like a creative human str
 - **Viral Hook**: A genuinely captivating 10-second hook that creates curiosity or an emotional connection.
 - **Thumbnail Concepts**: 3 creative and high-CTR thumbnail ideas with clear visual direction.
 - **Short Description**: A concise, engaging summary. This description MUST be under 150 characters.
-- **Tags/Hashtags**: 5 highly relevant and trending tags.
+- **Tags/Hashtags**: 5 highly relevant, lowercase keyword tags (without using the '#' symbol).
 - **Timestamped Structure Points**: 3 logical, well-paced points for the content's structure.
 - **Repurpose Suggestion**: A smart, actionable idea for repurposing the content on another platform.
 - **Difficulty Score**: A realistic score for creation difficulty.
@@ -127,6 +127,9 @@ const generateContentIdeasFlow = ai.defineFlow(
             if (newIdea.shortDescription.length > 150) {
                 newIdea.shortDescription = newIdea.shortDescription.substring(0, 150);
             }
+            
+            // Ensure tags are lowercase
+            newIdea.tags = newIdea.tags.map(tag => tag.toLowerCase());
 
             generatedIdeas.push(newIdea);
             // Add the new title to the list for subsequent uniqueness checks, though less critical with parallel execution

@@ -1,3 +1,4 @@
+
 import type { GenerateContentIdeasOutput } from "@/ai/flows/generate-content-ideas";
 import {
   AccordionContent,
@@ -42,7 +43,7 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
   const difficulty = getDifficultyInfo(idea.difficultyScore);
 
   const copyTags = () => {
-    navigator.clipboard.writeText(idea.tags.map(tag => tag.toLowerCase()).join(","));
+    navigator.clipboard.writeText(idea.tags.map(tag => tag.toLowerCase()).join(", "));
     toast({
       title: "Tags Copied!",
       description: "The tags have been copied to your clipboard.",
@@ -100,15 +101,15 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
                 ))}
               </ul>
             </Section>
-            <Section icon={Hash} title="Tags / Hashtags">
+            <Section icon={Hash} title="Tags / Keywords">
               <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap gap-2">
                   {idea.tags.map((tag, i) => (
                     <Badge key={i} variant="outline" className="cursor-pointer" onClick={() => {
-                      navigator.clipboard.writeText(tag);
+                      navigator.clipboard.writeText(tag.toLowerCase());
                       toast({ title: "Tag Copied!", description: `"${tag}" copied to clipboard.`});
                     }}>
-                      {tag}
+                      {tag.toLowerCase()}
                     </Badge>
                   ))}
                 </div>
