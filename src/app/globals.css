@@ -84,6 +84,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  .prose {
+    h1, h2, h3, h4, h5, h6 {
+      @apply tracking-tight;
+    }
+    p {
+      @apply leading-7;
+    }
+     ul, ol {
+      @apply my-4 ml-6;
+    }
+     li {
+      @apply my-2;
+    }
+     blockquote {
+      @apply mt-6 border-l-2 pl-6 italic;
+    }
+  }
+  .dark .prose {
+     h1, h2, h3, h4, h5, h6 {
+      @apply text-foreground;
+    }
+  }
 }
 
 @layer components {

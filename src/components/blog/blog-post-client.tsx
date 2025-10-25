@@ -92,16 +92,28 @@ export default function BlogPostClient({ slug }: { slug: string }) {
     }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: post?.title,
-        text: `Check out this article: ${post?.title}`,
-        url: window.location.href,
-      }).catch(error => console.log('Error sharing:', error));
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
+  const handleShare = async () => {
+    if (!post) return;
+    const shareData = {
+      title: post.title,
+      text: `Check out this article from CreatorX SEO: ${post.title}`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast({ title: "Article Shared!", description: "Thanks for sharing." });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({ title: "Link Copied!", description: "The article link has been copied to your clipboard." });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast({
+        variant: "destructive",
+        title: "Could not share",
+        description: "There was an error trying to share this article.",
+      });
     }
   };
 
