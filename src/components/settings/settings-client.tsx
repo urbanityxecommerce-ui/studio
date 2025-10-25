@@ -271,7 +271,7 @@ export default function SettingsClient() {
                   {isPasswordResetLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
                   Change Password
               </Button>
-               <p className="text-sm text-muted-foreground mt-2">A password reset link will be sent to your email address.</p>
+               <p className="text-sm text-muted-foreground mt-2">A password reset link will be sent to your email address. If you don't see it, please check your spam folder.</p>
           </CardContent>
       </Card>
 
@@ -324,5 +324,3 @@ export default function SettingsClient() {
     </div>
   );
 }
-
-    
