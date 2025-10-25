@@ -76,12 +76,7 @@ export const placeholderBlogPosts: BlogPost[] = [
           <li><strong>The Advice-Seeker:</strong> "This is the method I used, and it worked, but I know there are experts watching. What's the one thing you would have done differently? I want to learn."</li>
       </ul>
       <p>These prompts do more than just generate comments. They start a conversation, build a community, and signal to YouTube that your video is a central hub for discussion in your niche—a key indicator for long-term promotion.</p>
-    `]></content>
-  </change>
-  <change>
-    <file>src/lib/placeholder-blog.ts</file>
-    <description>Replaced the placeholder image for the YouTube strategy blog post with a more relevant image of a person browsing YouTube on their phone, as requested.</description>
-    <content><![CDATA[,
+    `,
     authorName: 'CreatorX',
     coverImageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1770&auto=format&fit=crop',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
@@ -180,12 +175,7 @@ export const placeholderBlogPosts: BlogPost[] = [
         <li><strong>Target a Niche-Down Audience:</strong> If their video is "Beginner Guitar Lessons," you can create "The First 5 Chords Every *Acoustic* Guitar Player Should Learn." Specialization is a powerful form of value.</li>
       </ul>
       <p>By systematically analyzing what works and then intentionally adding your unique value, you stop being a follower and start positioning yourself as the new leader in your niche.</p>
-    `]></content>
-  </change>
-  <change>
-    <file>src/lib/placeholder-blog.ts</file>
-    <description>Replaced the placeholder image for the YouTube strategy blog post with a more relevant image of a person browsing YouTube on their phone, as requested.</description>
-    <content><![CDATA[,
+    `,
     authorName: 'CreatorX',
     coverImageUrl: 'https://picsum.photos/seed/business-strategy/1200/600',
     tags: ['Strategy', 'SEO', 'Analysis', 'Marketing'],
