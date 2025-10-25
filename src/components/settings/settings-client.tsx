@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader2, KeyRound, Save, User, Palette, CreditCard, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { updateProfile, sendPasswordResetEmail } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { doc } from "firebase/firestore";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { useTheme } from "next-themes";
+import { updateDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
 const YOUTUBE_API_KEY_STORAGE_KEY = "youtube_api_key";
 
@@ -99,9 +100,8 @@ export default function SettingsClient() {
     if (!user || !firestore) return;
     setIsProfileLoading(true);
     try {
-      await updateProfile(user, { displayName: `${data.firstName} ${data.lastName}` });
       const userDoc = doc(firestore, 'users', user.uid);
-      await updateDoc(userDoc, {
+      updateDocumentNonBlocking(userDoc, {
         firstName: data.firstName,
         lastName: data.lastName,
       });
@@ -154,7 +154,7 @@ export default function SettingsClient() {
         console.error("Error sending password reset email:", error);
         toast({ variant: "destructive", title: "Error", description: "Could not send password reset email." });
     } finally {
-        setIsPasswordResetLoading(false);
+      setIsPasswordResetLoading(false);
     }
   }
 
@@ -220,7 +220,7 @@ export default function SettingsClient() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isProfileLoading}>
-                {isProfileLoading ? <Loader2 className="animate-spin" /> : <Save />}
+                {isProfileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Save Changes
               </Button>
             </CardFooter>
@@ -268,7 +268,7 @@ export default function SettingsClient() {
           </CardHeader>
           <CardContent>
               <Button onClick={handleChangePassword} disabled={isPasswordResetLoading}>
-                  {isPasswordResetLoading ? <Loader2 className="animate-spin" /> : <KeyRound />}
+                  {isPasswordResetLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
                   Change Password
               </Button>
                <p className="text-sm text-muted-foreground mt-2">A password reset link will be sent to your email address.</p>
@@ -314,7 +314,7 @@ export default function SettingsClient() {
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isApiKeyLoading}>
-                {isApiKeyLoading ? <Loader2 className="animate-spin" /> : <Save />}
+                {isApiKeyLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Save API Key
               </Button>
             </CardFooter>
@@ -324,3 +324,5 @@ export default function SettingsClient() {
     </div>
   );
 }
+
+    
