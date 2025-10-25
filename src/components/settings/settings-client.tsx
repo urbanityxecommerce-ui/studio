@@ -1,10 +1,14 @@
+
 "use client";
 
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2, KeyRound, Save } from "lucide-react";
+import { Loader2, KeyRound, Save, User, Palette, CreditCard, ShieldAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { updateProfile, sendPasswordResetEmail } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,46 +31,97 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import Link from "next/link";
+import { useAuth, useDoc, useFirestore, useMemoFirebase, useUser } from "@/firebase";
+import { Skeleton } from "../ui/skeleton";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
+import { useTheme } from "next-themes";
 
 const YOUTUBE_API_KEY_STORAGE_KEY = "youtube_api_key";
 
-const formSchema = z.object({
+const profileFormSchema = z.object({
+  firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
+  lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
+});
+
+const apiKeyFormSchema = z.object({
   youtubeApiKey: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
+type ApiKeyFormValues = z.infer<typeof apiKeyFormSchema>;
 
 export default function SettingsClient() {
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isMounted, setIsMounted] = React.useState(false);
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const firestore = useFirestore();
+  const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const [isProfileLoading, setIsProfileLoading] = React.useState(false);
+  const [isApiKeyLoading, setIsApiKeyLoading] = React.useState(false);
+  const [isPasswordResetLoading, setIsPasswordResetLoading] = React.useState(false);
+
+  const userDocRef = useMemoFirebase(() => (user ? doc(firestore, 'users', user.uid) : null), [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc<{ plan?: string; firstName?: string; lastName?: string }>(userDocRef);
+
+  const profileForm = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
+  });
+
+  const apiKeyForm = useForm<ApiKeyFormValues>({
+    resolver: zodResolver(apiKeyFormSchema),
     defaultValues: {
       youtubeApiKey: "",
     },
   });
 
   React.useEffect(() => {
-    setIsMounted(true);
+    if (userData) {
+      profileForm.setValue("firstName", userData.firstName || '');
+      profileForm.setValue("lastName", userData.lastName || '');
+    }
+  }, [userData, profileForm]);
+
+  React.useEffect(() => {
     const storedApiKey = localStorage.getItem(YOUTUBE_API_KEY_STORAGE_KEY);
     if (storedApiKey) {
-      form.setValue("youtubeApiKey", storedApiKey);
+      apiKeyForm.setValue("youtubeApiKey", storedApiKey);
     }
-  }, [form]);
+  }, [apiKeyForm]);
 
-  function onSubmit(data: FormValues) {
-    setIsLoading(true);
+  async function onProfileSubmit(data: ProfileFormValues) {
+    if (!user || !firestore) return;
+    setIsProfileLoading(true);
+    try {
+      await updateProfile(user, { displayName: `${data.firstName} ${data.lastName}` });
+      const userDoc = doc(firestore, 'users', user.uid);
+      await updateDoc(userDoc, {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
+      toast({
+        title: "Profile Updated!",
+        description: "Your name has been successfully updated.",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({ variant: "destructive", title: "Update Failed", description: "Could not update your profile." });
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }
+
+  function onApiKeySubmit(data: ApiKeyFormValues) {
+    setIsApiKeyLoading(true);
     try {
       if (data.youtubeApiKey) {
         localStorage.setItem(YOUTUBE_API_KEY_STORAGE_KEY, data.youtubeApiKey);
-        // This is a client-side only operation for demonstration.
-        // In a real app, this should be a secure server call.
-        // For the purpose of this tool, we'll set a non-public env var conceptually.
-        // But since we can't modify server env at runtime, we rely on localstorage
-        // and the flow to read from a secure place.
-        // The fix is to ensure the tool reads from `process.env.YOUTUBE_API_KEY`.
         toast({
           title: "Settings Saved!",
           description: "Your YouTube API Key has been saved locally.",
@@ -80,19 +135,46 @@ export default function SettingsClient() {
       }
     } catch (error) {
       console.error("Error saving settings:", error);
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description:
-          "There was a problem saving your settings. Please try again.",
-      });
+      toast({ variant: "destructive", title: "Save Failed", description: "There was a problem saving your settings." });
     } finally {
-      setIsLoading(false);
+      setIsApiKeyLoading(false);
     }
   }
-  
-  if (!isMounted) {
-    return null;
+
+  async function handleChangePassword() {
+    if (!user?.email) return;
+    setIsPasswordResetLoading(true);
+    try {
+        await sendPasswordResetEmail(auth, user.email);
+        toast({
+            title: "Password Reset Email Sent",
+            description: `A password reset link has been sent to ${user.email}.`,
+        });
+    } catch (error) {
+        console.error("Error sending password reset email:", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not send password reset email." });
+    } finally {
+        setIsPasswordResetLoading(false);
+    }
+  }
+
+  if (isUserLoading || isUserDataLoading) {
+    return (
+      <div className="space-y-8">
+        <header className="space-y-1">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-5 w-72" />
+        </header>
+        <Card>
+          <CardHeader><Skeleton className="h-7 w-32" /></CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </CardContent>
+          <CardFooter><Skeleton className="h-10 w-24" /></CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -100,12 +182,103 @@ export default function SettingsClient() {
       <header className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground">
-          Manage your application settings and API keys.
+          Manage your account, preferences, and application settings.
         </p>
       </header>
 
+      {/* Profile Settings */}
+      <Card>
+        <Form {...profileForm}>
+          <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><User /> Profile</CardTitle>
+              <CardDescription>Manage your personal information.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={profileForm.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl><Input placeholder="John" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={profileForm.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl><Input placeholder="Doe" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isProfileLoading}>
+                {isProfileLoading ? <Loader2 className="animate-spin" /> : <Save />}
+                Save Changes
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
+      
+      {/* Theme Settings */}
+      <Card>
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Palette /> Theme</CardTitle>
+              <CardDescription>Customize the look and feel of the application.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              <div className="flex items-center space-x-2">
+                  <Switch id="theme-mode" checked={theme === 'dark'} onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
+                  <Label htmlFor="theme-mode">Dark Mode</Label>
+              </div>
+          </CardContent>
+      </Card>
+
+      {/* Subscription Settings */}
+      <Card>
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2"><CreditCard /> Subscription</CardTitle>
+              <CardDescription>Manage your current plan and billing details.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              <p>Your current plan: <span className="font-semibold capitalize">{userData?.plan || 'Free'}</span></p>
+          </CardContent>
+           <CardFooter>
+              <Button asChild>
+                  <Link href="/upgrade">
+                    {userData?.plan === 'pro' ? 'Manage Subscription' : 'Upgrade to Pro'}
+                  </Link>
+              </Button>
+            </CardFooter>
+      </Card>
+
+      {/* Security Settings */}
+      <Card>
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2"><ShieldAlert /> Security</CardTitle>
+              <CardDescription>Manage your account security settings.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              <Button onClick={handleChangePassword} disabled={isPasswordResetLoading}>
+                  {isPasswordResetLoading ? <Loader2 className="animate-spin" /> : <KeyRound />}
+                  Change Password
+              </Button>
+               <p className="text-sm text-muted-foreground mt-2">A password reset link will be sent to your email address.</p>
+          </CardContent>
+      </Card>
+
+
+      {/* API Key Settings */}
        <Alert>
-        <KeyRound className="h-4 w-4" />
+        <KeyRound />
         <AlertTitle>Where to get a YouTube API Key?</AlertTitle>
         <AlertDescription>
             The Competitor Analysis feature requires a YouTube Data API key to fetch public data about channels and videos. You can get a free API key from the Google Cloud Console. Follow the official guide {" "}
@@ -116,8 +289,8 @@ export default function SettingsClient() {
       </Alert>
 
       <Card>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Form {...apiKeyForm}>
+          <form onSubmit={apiKeyForm.handleSubmit(onApiKeySubmit)}>
             <CardHeader>
               <CardTitle>API Keys</CardTitle>
               <CardDescription>
@@ -126,7 +299,7 @@ export default function SettingsClient() {
             </CardHeader>
             <CardContent>
               <FormField
-                control={form.control}
+                control={apiKeyForm.control}
                 name="youtubeApiKey"
                 render={({ field }) => (
                   <FormItem>
@@ -140,13 +313,9 @@ export default function SettingsClient() {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                Save Settings
+              <Button type="submit" disabled={isApiKeyLoading}>
+                {isApiKeyLoading ? <Loader2 className="animate-spin" /> : <Save />}
+                Save API Key
               </Button>
             </CardFooter>
           </form>

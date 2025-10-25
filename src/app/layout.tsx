@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { FirebaseClientProvider } from '@/firebase';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'CreatorX SEO',
@@ -15,19 +16,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" style={{ colorScheme: 'dark' }} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <FirebaseClientProvider>
-          <SidebarProvider>
-            {children}
-          </SidebarProvider>
-        </FirebaseClientProvider>
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+          <FirebaseClientProvider>
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
+          </FirebaseClientProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
