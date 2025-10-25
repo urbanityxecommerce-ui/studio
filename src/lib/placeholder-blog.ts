@@ -75,12 +75,11 @@ export const placeholderBlogPosts: BlogPost[] = [
           <li><strong>The "Prove Me Wrong" Prompt:</strong> "I'm making a bold claim: I think this new software is a complete waste of money for beginners. If you disagree, tell me why in the comments. I'll read every one."</li>
           <li><strong>The Advice-Seeker:</strong> "This is the method I used, and it worked, but I know there are experts watching. What's the one thing you would have done differently? I want to learn."</li>
       </ul>
-      <p>These prompts do more than just generate comments. They start a conversation, build a community, and signal to YouTube that your video is a central hub for discussion in your niche—a key indicator for long-term promotion.</p>
       <h3>Turn Strategy Into Action</h3>
       <p>Reading about these strategies is one thing, but implementing them is what drives growth. Many of the principles discussed here can be streamlined and amplified using the tools right here in CreatorX SEO. Use the <strong>Competitor Analysis</strong> tool to find those topic gaps, test your title and thumbnail ideas with the <strong>Thumbnail Optimizer</strong>, and never run out of inspiration with the <strong>Content Ideas</strong> generator. Your next viral hit is waiting for you to build it.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=2070&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
     createdAt: '2024-07-20T10:00:00Z',
   },
@@ -129,7 +128,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Mastering Reel SEO requires a blend of creativity and data-driven strategy. To fast-track your success, the <strong>Reel SEO</strong> tool inside CreatorX is built to generate optimized captions with compelling calls-to-action in seconds. Stop guessing and start ranking. Give it a try and see how quickly you can amplify your reach on the platform.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1616469829935-c2f334691a25?q=80&w=2070&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
   },
@@ -183,7 +182,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>This entire process of strategic analysis can be time-consuming, but it's essential for growth. That's why we built the <strong>Competitor Analysis</strong> tool directly into this app. Instead of manually digging through channels, you can get a detailed breakdown of top videos, headline patterns, and common tags in a single click. It does the data-mining for you, so you can spend your time on what truly matters: creating better content.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1585252425429-91743b1a99a4?q=80&w=2071&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['Strategy', 'SEO', 'Analysis', 'Marketing'],
     createdAt: '2024-07-15T09:00:00Z',
   }
