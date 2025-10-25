@@ -1,128 +1,160 @@
 /**
  * @file Firestore Security Rules
- * @description This ruleset enforces a strict user-ownership model for private data and allows public read access for shared data.
+ * @description This ruleset enforces a strict user-ownership model for private data and allows public read access for shared content.
  *
  * Data Structure:
- * - User-specific data (channel accounts, content ideas, WhatsApp sessions) is nested under `/users/{userId}`.
- * - Public data (trend events, keywords, competitors) is stored in top-level collections.
+ * - /users/{userId}: Stores private user data. Access is restricted to the authenticated user.
+ * - /users/{userId}/channelAccounts/{channelAccountId}: Channel accounts owned by the user.
+ * - /users/{userId}/contentIdeas/{contentIdeaId}: Content ideas owned by the user.
+ * - /users/{userId}/whatsAppSessions/{sessionId}: WhatsApp sessions owned by the user.
+ * - /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}: Video metrics for a given channel account.
+ * - /trendEvents/{trendEventId}: Public trending events.
+ * - /subscriptions/{subscriptionId}: Subscription information.
+ * - /keywords/{keywordId}: Public keyword data.
+ * - /competitors/{competitorId}: Public competitor data.
+ * - /blogPosts/{postId}: Public blog posts.
+ * - /blogPosts/{postId}/comments/{commentId}: Comments on public blog posts.
  *
  * Key Security Decisions:
- * - User listing is disallowed.
- * - Public collections (trendEvents, keywords, competitors) are readable by all.
- * - Owner-only write access is enforced for user-specific data.
+ * - User-owned data is stored under /users/{userId} to simplify ownership checks.
+ * - Public data (TrendEvents, Keywords, Competitors, BlogPosts, BlogComments) is stored in top-level collections, allowing public read access.
+ * - All write operations on user-owned data require authentication and ownership validation.
+ * - Blog posts are publicly readable, but write access is restricted to owners.
+ * - Blog comments are publicly readable, but only authenticated users can create them.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is made by the owner of the resource.
-     * @param {string} userId - The user ID to compare against the request's authentication UID.
-     * @return {bool} - True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the user is signed in.
-     * @return {bool} - True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the user is the owner of the resource and the resource exists.
-     *              This is used for update and delete operations to prevent acting on non-existent documents.
-     * @param {string} userId - The user ID to compare against the resource's owner ID.
-     * @return {bool} - True if the user is the owner and the resource exists, false otherwise.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource.data.userId == request.auth.uid;
-    }
-
-    /**
-     * @description Defines security rules for user profiles.
+     * @description Enforces access control for user profiles.
      * @path /users/{userId}
-     * @allow (create) - Allow user to create their profile if the userId matches their auth.uid.
-     * @allow (get, update, delete) - Allow access if the user is the owner.
-     * @deny (list) - Listing users is not allowed.
-     * @deny (create) - Deny creating a user if the userId doesn't match auth.uid.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data.
+     * @allow (create) Authenticated user can create their own profile.
+     * @allow (get, list, update, delete) Authenticated user can only access their own profile.
+     * @deny (create) Unauthenticated users cannot create profiles.
+     * @deny (get, list, update, delete) Users cannot access other user profiles.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-      allow create: if request.auth.uid == userId;
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Defines security rules for channel accounts under a user.
+     * @description Enforces access control for channel accounts owned by a user.
      * @path /users/{userId}/channelAccounts/{channelAccountId}
-     * @allow (create, get, update, delete, list) - Allow access if the user is the owner.
-     * @deny (create, update, delete) - Deny access if the user is not the owner.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) Authenticated user can create channel accounts under their profile.
+     * @allow (get, list, update, delete) Authenticated user can only access channel accounts under their profile.
+     * @deny (create) Unauthenticated users cannot create channel accounts.
+     * @deny (get, list, update, delete) Users cannot access channel accounts under other user profiles.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/channelAccounts/{channelAccountId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Defines security rules for content ideas under a user.
+     * @description Enforces access control for content ideas owned by a user.
      * @path /users/{userId}/contentIdeas/{contentIdeaId}
-     * @allow (create, get, update, delete, list) - Allow access if the user is the owner.
-     * @deny (create, update, delete) - Deny access if the user is not the owner.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) Authenticated user can create content ideas under their profile.
+     * @allow (get, list, update, delete) Authenticated user can only access content ideas under their profile.
+     * @deny (create) Unauthenticated users cannot create content ideas.
+     * @deny (get, list, update, delete) Users cannot access content ideas under other user profiles.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/contentIdeas/{contentIdeaId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Defines security rules for WhatsApp sessions under a user.
+     * @description Enforces access control for WhatsApp sessions owned by a user.
      * @path /users/{userId}/whatsAppSessions/{sessionId}
-     * @allow (create, get, update, delete, list) - Allow access if the user is the owner.
-     * @deny (create, update, delete) - Deny access if the user is not the owner.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) Authenticated user can create WhatsApp sessions under their profile.
+     * @allow (get, list, update, delete) Authenticated user can only access WhatsApp sessions under their profile.
+     * @deny (create) Unauthenticated users cannot create WhatsApp sessions.
+     * @deny (get, list, update, delete) Users cannot access WhatsApp sessions under other user profiles.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/whatsAppSessions/{sessionId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Defines security rules for video metrics under a channel account.
+     * @description Enforces access control for video metrics associated with a channel account.
      * @path /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId}
-     * @allow (get, list) - Allow read access to anyone.
-     * @deny (create, update, delete) - Writes are forbidden.
+     * @allow (get, list) Anyone can read video metrics.
+     * @deny (create, update, delete) No one can create, update, or delete video metrics.
+     * @principle Read-only access for video metrics.
      */
     match /channelAccounts/{channelAccountId}/videoMetrics/{videoMetricsId} {
-        allow get: if true;
-        allow list: if true;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     /**
-     * @description Defines security rules for trend events. Public read access is allowed.
+     * @description Allows public read access to trending events.
      * @path /trendEvents/{trendEventId}
-     * @allow (get, list) - Allow read access to anyone.
-     * @deny (create, update, delete) - Writes are forbidden.
+     * @allow (get, list) Anyone can read trending events.
+     * @deny (create, update, delete) No one can create, update, or delete trending events.
+     * @principle Public read access for trending events.
      */
     match /trendEvents/{trendEventId} {
       allow get: if true;
@@ -133,24 +165,25 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines security rules for subscriptions.
+     * @description Enforces access control for subscription data.
      * @path /subscriptions/{subscriptionId}
-     * @allow (get, list) - Allow read access to anyone.
-     * @deny (create, update, delete) - Writes are forbidden.
+     * @deny (get, list, create, update, delete) No one can access subscription data.
+     * @principle No access to subscription data.
      */
     match /subscriptions/{subscriptionId} {
-        allow get: if true;
-        allow list: if true;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
 
     /**
-     * @description Defines security rules for keywords. Public read access is allowed.
+     * @description Allows public read access to keyword data.
      * @path /keywords/{keywordId}
-     * @allow (get, list) - Allow read access to anyone.
-     * @deny (create, update, delete) - Writes are forbidden.
+     * @allow (get, list) Anyone can read keyword data.
+     * @deny (create, update, delete) No one can create, update, or delete keyword data.
+     * @principle Public read access for keyword data.
      */
     match /keywords/{keywordId} {
       allow get: if true;
@@ -161,15 +194,63 @@ service cloud.firestore {
     }
 
     /**
-     * @description Defines security rules for competitors. Public read access is allowed.
+     * @description Allows public read access to competitor data.
      * @path /competitors/{competitorId}
-     * @allow (get, list) - Allow read access to anyone.
-     * @deny (create, update, delete) - Writes are forbidden.
+     * @allow (get, list) Anyone can read competitor data.
+     * @deny (create, update, delete) No one can create, update, or delete competitor data.
+     * @principle Public read access for competitor data.
      */
     match /competitors/{competitorId} {
       allow get: if true;
       allow list: if true;
       allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Allows public read access to blog posts, but restricts writes to owners.
+     * @path /blogPosts/{postId}
+     * @allow (get, list) Anyone can read blog posts.
+     * @allow (create) Only authenticated users can create blog posts, with matching authorId.
+     * @allow (update, delete) Only the author can update or delete their blog post.
+     * @deny (create) Unauthenticated users can't create blog posts.
+     * @deny (update, delete) Non-authors can't update or delete blog posts.
+     * @principle Public read, owner-only writes for blog posts.
+     */
+    match /blogPosts/{postId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isOwner(authorId) {
+        return request.auth.uid == authorId;
+      }
+      function isExistingOwner(authorId) {
+          return isSignedIn() && isOwner(authorId) && resource != null;
+      }
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.authorId);
+      allow delete: if isExistingOwner(resource.data.authorId);
+    }
+
+    /**
+     * @description Allows public read access to blog comments, but restricts creation to authenticated users.
+     * @path /blogPosts/{postId}/comments/{commentId}
+     * @allow (get, list) Anyone can read blog comments.
+     * @allow (create) Only authenticated users can create blog comments.
+     * @deny (create) Unauthenticated users can't create blog comments.
+     * @deny (update, delete) No one can update or delete blog comments.
+     * @principle Public read, authenticated-user-only creation for blog comments.
+     */
+    match /blogPosts/{postId}/comments/{commentId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn();
       allow update: if false;
       allow delete: if false;
     }
