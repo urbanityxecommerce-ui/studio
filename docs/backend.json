@@ -391,6 +391,99 @@
         "sessionId",
         "startTime"
       ]
+    },
+    "BlogPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BlogPost",
+      "type": "object",
+      "description": "Represents a single blog post.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BlogPost entity."
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL-friendly slug for the blog post."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the blog post."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full content of the blog post, likely in Markdown or HTML."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "Reference to the User who wrote the post."
+        },
+        "coverImageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the blog post's cover image."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "A list of tags for categorizing the post."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the post was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the post was last updated."
+        },
+        "commenters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of user IDs who have commented on the post."
+        }
+      },
+      "required": ["id", "slug", "title", "content", "authorId", "createdAt", "updatedAt"]
+    },
+    "BlogComment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BlogComment",
+      "type": "object",
+      "description": "Represents a comment on a blog post.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BlogComment entity."
+        },
+        "postId": {
+          "type": "string",
+          "description": "Reference to the BlogPost this comment belongs to."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who wrote the comment."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The display name of the user at the time of commenting."
+        },
+        "userAvatar": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URL to the user's avatar at the time of commenting."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the comment."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the comment was created."
+        }
+      },
+      "required": ["id", "postId", "userId", "userName", "content", "createdAt"]
     }
   },
   "auth": {
@@ -559,8 +652,31 @@
             }
           ]
         }
+      },
+      {
+        "path": "/blogPosts/{postId}",
+        "definition": {
+          "entityName": "BlogPost",
+          "schema": { "$ref": "#/backend/entities/BlogPost" },
+          "description": "Stores individual blog post documents. Publicly readable.",
+          "params": [
+            { "name": "postId", "description": "The unique identifier for the blog post." }
+          ]
+        }
+      },
+      {
+        "path": "/blogPosts/{postId}/comments/{commentId}",
+        "definition": {
+          "entityName": "BlogComment",
+          "schema": { "$ref": "#/backend/entities/BlogComment" },
+          "description": "Stores comments for a specific blog post. Publicly readable, but only authenticated users can write.",
+          "params": [
+            { "name": "postId", "description": "The ID of the parent blog post." },
+            { "name": "commentId", "description": "The unique identifier for the comment." }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore structure prioritizes authorization independence and QAPs (Rules are not Filters). User-owned data (ChannelAccounts, ContentIdeas, WhatsAppSessions) are stored under `/users/{userId}` to simplify ownership-based security rules. This eliminates the need for complex `get()` calls in security rules and enables atomic operations.  Subscriptions are stored in a top-level collection to support global queries and simplify subscription-based feature gating.\n\nAuthorization Independence is achieved via path-based ownership for private user data. For example, content ideas are stored under `/users/{userId}/contentIdeas/{contentIdeaId}` which allows security rules to simply check `request.auth.uid == userId`. No data needs to be read to determine authorization.  No membership maps are required as all user-owned data follows the `/users/{userId}` structure. All collections of user data leverage path-based ownership, ensuring authorization rules can be written based solely on the path and `request.auth.uid`.\n\nQAPs are supported via structural segregation. Public data (TrendEvents, Keywords, Competitors) is stored in top-level collections, allowing secure list operations without complex filtering logic in security rules. User-specific data is segregated under the `/users/{userId}` path, enabling secure listing of user-owned entities."
+    "reasoning": "The Firestore structure prioritizes authorization independence and QAPs (Rules are not Filters). User-owned data (ChannelAccounts, ContentIdeas, WhatsAppSessions) are stored under `/users/{userId}` to simplify ownership-based security rules. This eliminates the need for complex `get()` calls in security rules and enables atomic operations.  Subscriptions are stored in a top-level collection to support global queries and simplify subscription-based feature gating. The new blog structure includes a top-level `blogPosts` collection for easy querying of all posts, which is publicly readable. Comments are stored in a subcollection under each post (`/blogPosts/{postId}/comments/{commentId}`) to logically group them and allow for efficient, paginated loading while still enabling straightforward security rules (e.g., anyone can read comments for a post, but only logged-in users can create them).\n\nAuthorization Independence is achieved via path-based ownership for private user data. For example, content ideas are stored under `/users/{userId}/contentIdeas/{contentIdeaId}` which allows security rules to simply check `request.auth.uid == userId`. No data needs to be read to determine authorization.  No membership maps are required as all user-owned data follows the `/users/{userId}` structure. All collections of user data leverage path-based ownership, ensuring authorization rules can be written based solely on the path and `request.auth.uid`.\n\nQAPs are supported via structural segregation. Public data (TrendEvents, Keywords, Competitors, BlogPosts, BlogComments) is stored in top-level collections, allowing secure list operations without complex filtering logic in security rules. User-specific data is segregated under the `/users/{userId}` path, enabling secure listing of user-owned entities."
   }
 }

@@ -17,6 +17,7 @@ import {
   Users,
   Zap,
   Film,
+  Newspaper,
 } from "lucide-react";
 
 import { Logo } from "@/components/icons";
@@ -50,6 +51,7 @@ import { doc } from "firebase/firestore";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
+  { href: "/blog", label: "Blog", icon: Newspaper },
   { href: "/keyword-research", label: "Keyword Research", icon: Search },
   { href: "/competitor-analysis", label: "Competitor Analysis", icon: Users },
   { href: "/thumbnail-optimizer", label: "Thumbnail Optimizer", icon: Image },
