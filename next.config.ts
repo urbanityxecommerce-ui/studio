@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const withPWA = require('next-pwa')({
@@ -40,4 +41,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPWA(nextConfig);
+const isTurbopack = !!process.env.TURBOPACK;
+
+// Conditionally apply PWA wrapper. It's not compatible with Turbopack in dev.
+// PWA features will still be available in the production build.
+if (!isTurbopack && process.env.NODE_ENV !== 'development') {
+    module.exports = withPWA(nextConfig);
+} else {
+    module.exports = nextConfig;
+}
