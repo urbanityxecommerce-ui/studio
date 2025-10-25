@@ -42,15 +42,26 @@ const GenerateContentIdeasOutputSchema = z.object({
 
 export type GenerateContentIdeasOutput = z.infer<typeof GenerateContentIdeasOutputSchema>;
 
+// This is the input for the prompt that generates a *single* idea.
+const SingleIdeaInputSchema = GenerateContentIdeasInputSchema.extend({
+  existingTitles: z.array(z.string()).optional().describe('A list of titles already generated to ensure originality.'),
+});
+
+// This is the output for the prompt that generates a *single* idea.
+const SingleIdeaOutputSchema = z.object({
+  idea: ContentIdeaSchema,
+});
+
+
 export async function generateContentIdeas(input: GenerateContentIdeasInput): Promise<GenerateContentIdeasOutput> {
   return generateContentIdeasFlow(input);
 }
 
-const generateContentIdeasPrompt = ai.definePrompt({
-  name: 'generateContentIdeasPrompt',
-  input: {schema: GenerateContentIdeasInputSchema},
-  output: {schema: GenerateContentIdeasOutputSchema},
-  prompt: `You are a viral content strategist and an expert SEO copywriter. Your goal is to generate 5 highly original, powerful, and human-sounding content ideas based on the user's criteria.
+const generateSingleContentIdeaPrompt = ai.definePrompt({
+  name: 'generateSingleContentIdeaPrompt',
+  input: {schema: SingleIdeaInputSchema},
+  output: {schema: SingleIdeaOutputSchema},
+  prompt: `You are a viral content strategist and an expert SEO copywriter. Your goal is to generate ONE highly original, powerful, and human-sounding content idea based on the user's criteria.
 
 User Criteria:
 - Category: {{{category}}}
@@ -60,7 +71,13 @@ User Criteria:
 - Format: {{{preferredFormat}}}
 - Tone: {{{tone}}}
 
-For each idea, provide the following, ensuring it feels like a creative human strategist came up with it:
+Please generate a NEW and ORIGINAL idea that is distinct from these already generated titles:
+{{#each existingTitles}}
+- {{{this}}}
+{{/each}}
+
+
+For the idea, provide the following, ensuring it feels like a creative human strategist came up with it:
 - **Title**: A compelling, human-friendly title.
 - **SEO Title Variations**: 5 powerful, keyword-rich variations optimized for search engines.
 - **Viral Hook**: A genuinely captivating 10-second hook that creates curiosity or an emotional connection.
@@ -73,8 +90,9 @@ For each idea, provide the following, ensuring it feels like a creative human st
 
 Focus on originality, emotional resonance, and proven SEO tactics. Avoid generic ideas. Think about what would genuinely capture attention and provide value.
 
-Output must be a JSON object that strictly follows the output schema.`, 
+Output must be a JSON object that strictly follows the output schema.`,
 });
+
 
 const generateContentIdeasFlow = ai.defineFlow(
   {
@@ -83,19 +101,39 @@ const generateContentIdeasFlow = ai.defineFlow(
     outputSchema: GenerateContentIdeasOutputSchema,
   },
   async input => {
-    const {output} = await generateContentIdeasPrompt(input);
-    
-    if (!output || !output.ideas) {
-      throw new Error("Failed to generate ideas. The output was empty.");
+    const promises = [];
+    const generatedIdeas: z.infer<typeof ContentIdeaSchema>[] = [];
+    const existingTitles: string[] = [];
+
+    for (let i = 0; i < 5; i++) {
+        const promise = generateSingleContentIdeaPrompt({
+            ...input,
+            existingTitles,
+        }).then(result => {
+            if(result.output?.idea) {
+                const newIdea = result.output.idea;
+
+                 // Ensure descriptions don't exceed the character limit.
+                if (newIdea.shortDescription.length > 150) {
+                    newIdea.shortDescription = newIdea.shortDescription.substring(0, 150);
+                }
+
+                generatedIdeas.push(newIdea);
+                existingTitles.push(newIdea.title);
+            }
+        }).catch(error => {
+            // Log the error but don't block other promises
+            console.error(`Error generating idea number ${i + 1}:`, error);
+        });
+        promises.push(promise);
     }
 
-    // Ensure descriptions don't exceed the character limit.
-    output.ideas.forEach(idea => {
-      if (idea.shortDescription.length > 150) {
-        idea.shortDescription = idea.shortDescription.substring(0, 150);
-      }
-    });
+    await Promise.all(promises);
+    
+    if (generatedIdeas.length === 0) {
+      throw new Error("Failed to generate any ideas. Please try again.");
+    }
 
-    return output;
+    return { ideas: generatedIdeas };
   }
 );
