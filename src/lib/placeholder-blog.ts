@@ -61,7 +61,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>It wasn't luck. It was a plan. We stopped being lazy, respected the "packaging," stopped guessing, and were consistent. If your channel feels dead, it's probably not. It's just waiting for you to follow the right plan.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1492496913980-501348b61469?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['YouTube', 'Growth', 'Strategy', 'Case Study'],
     createdAt: '2024-07-25T11:00:00Z',
   },
@@ -132,7 +132,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Reading about these strategies is one thing, but implementing them is what drives growth. Many of the principles discussed here can be streamlined and amplified using the tools right here in CreatorX SEO. Use the <strong>Competitor Analysis</strong> tool to find those topic gaps, test your title and thumbnail ideas with the <strong>Thumbnail Optimizer</strong>, and never run out of inspiration with the <strong>Content Ideas</strong> generator. Your next viral hit is waiting for you to build it.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1543269664-76bc3997d9ea?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
     createdAt: '2024-07-20T10:00:00Z',
   },
@@ -181,7 +181,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Mastering Reel SEO requires a blend of creativity and data-driven strategy. To fast-track your success, the <strong>Reel SEO</strong> tool inside CreatorX is built to generate optimized captions with compelling calls-to-action in seconds. Stop guessing and start ranking. Give it a try and see how quickly you can amplify your reach on the platform.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&h=400&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1620712943543-959692839554?q=80&w=600&h=400&auto=format&fit=crop',
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
   },
