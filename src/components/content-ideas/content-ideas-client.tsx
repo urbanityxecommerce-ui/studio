@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -10,6 +11,7 @@ import {
   Copy,
   Download,
   FileJson,
+  Info,
   Lightbulb,
   Loader2,
   PlusSquare,
@@ -28,7 +30,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -51,6 +52,7 @@ import {
 import IdeaCard from "./idea-card";
 import { Accordion } from "@/components/ui/accordion";
 import IdeaCardSkeleton from "./idea-card-skeleton";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 const formSchema = z.object({
   category: z.string().min(2, { message: "Category is required." }),
@@ -193,6 +195,14 @@ export default function ContentIdeasClient() {
           Generate viral content ideas with the power of AI.
         </p>
       </header>
+
+      <Alert>
+        <Info className="h-4 w-4" />
+        <AlertTitle>Pro Tip!</AlertTitle>
+        <AlertDescription>
+          Sometimes the AI might not generate ideas on the first try. If you see an error, please try generating them again. It often works on the second attempt!
+        </AlertDescription>
+      </Alert>
 
       <Card>
         <Form {...form}>
