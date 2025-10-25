@@ -51,13 +51,13 @@
     --primary-foreground: 45 10% 10%;
     --secondary: 240 5% 18%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 18%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 240 5% 22%;
+    --muted-foreground: 240 5% 75%;
     --accent: 262 80% 58%; /* Violet */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 15%;
+    --border: 240 5% 18%;
     --input: 240 5% 18%;
     --ring: 45 90% 55%;
     --chart-1: 262 70% 50%;
@@ -83,5 +83,12 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .card {
+    @apply shadow-lg;
+    box-shadow: 0 0 15px 1px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--background) / 0.1);
   }
 }
