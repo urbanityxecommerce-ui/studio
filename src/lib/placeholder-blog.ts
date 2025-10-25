@@ -129,7 +129,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>Mastering Reel SEO requires a blend of creativity and data-driven strategy. To fast-track your success, the <strong>Reel SEO</strong> tool inside CreatorX is built to generate optimized captions with compelling calls-to-action in seconds. Stop guessing and start ranking. Give it a try and see how quickly you can amplify your reach on the platform.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://picsum.photos/seed/instagram-seo/1200/600',
+    coverImageUrl: 'https://images.unsplash.com/photo-1616469829935-c2f334691a25?q=80&w=2070&auto=format&fit=crop',
     tags: ['Instagram', 'Reels', 'Social Media', 'SEO'],
     createdAt: '2024-07-18T14:30:00Z',
   },
