@@ -193,7 +193,7 @@ export default function ContentIdeasClient() {
                 name="targetAudience"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Audience</FormLabel>sever
+                    <FormLabel>Target Audience</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Beginners" {...field} />
                     </FormControl>
