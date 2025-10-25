@@ -42,7 +42,7 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
   const difficulty = getDifficultyInfo(idea.difficultyScore);
 
   const copyTags = () => {
-    navigator.clipboard.writeText(idea.tags.join(" "));
+    navigator.clipboard.writeText(idea.tags.map(tag => tag.toLowerCase()).join(", "));
     toast({
       title: "Tags Copied!",
       description: "The tags have been copied to your clipboard.",
