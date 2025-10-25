@@ -8,7 +8,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 export const metadata: Metadata = {
   title: 'CreatorX SEO',
   description: 'The ultimate SEO toolkit for YouTubers and Instagram creators.',
-  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
