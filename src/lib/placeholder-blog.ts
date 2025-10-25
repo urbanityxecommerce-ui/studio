@@ -78,7 +78,7 @@ export const placeholderBlogPosts: BlogPost[] = [
       <p>These prompts do more than just generate comments. They start a conversation, build a community, and signal to YouTube that your video is a central hub for discussion in your niche—a key indicator for long-term promotion.</p>
     `,
     authorName: 'CreatorX',
-    coverImageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1770&auto=format&fit=crop',
+    coverImageUrl: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1974&auto=format&fit=crop',
     tags: ['YouTube', 'SEO', 'Growth Hacking', 'Content Strategy'],
     createdAt: '2024-07-20T10:00:00Z',
   },
