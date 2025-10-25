@@ -15,7 +15,7 @@ import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { collection, serverTimestamp, query, orderBy, doc, arrayUnion } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { format, subDays } from 'date-fns';
-import { Calendar, Loader2, MessageCircle, Send, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Loader2, MessageCircle, Send, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
 import { Logo } from '../icons';
@@ -121,6 +121,12 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+       <div className="mb-8">
+        <Button variant="ghost" onClick={() => router.back()} className="text-muted-foreground">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Blog
+        </Button>
+      </div>
       <article className="space-y-8">
         <header className="space-y-4">
           <div className="flex flex-wrap gap-2">
