@@ -107,7 +107,7 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
                         type: ['channel'],
                         maxResults: 1
                     });
-                     if (searchResponse.data.items && searchResponse.data.items.length > 0) {
+                     if (searchResponse.data.items && searchResponse.data.length > 0) {
                         channelId = searchResponse.data.items[0].snippet?.channelId ?? null;
                     }
                 } catch(error: any) {
@@ -170,3 +170,78 @@ export const getYoutubeChannelAndVideoDetails = ai.defineTool(
     }
   }
 );
+
+
+export const getYoutubeKeywordSuggestions = ai.defineTool(
+    {
+      name: 'getYoutubeKeywordSuggestions',
+      description: 'Get a list of keyword suggestions from YouTube based on a topic.',
+      inputSchema: z.string(),
+      outputSchema: z.array(z.string()),
+    },
+    async (topic) => {
+      try {
+        const response = await youtube.search.list({
+          part: ['snippet'],
+          q: topic,
+          type: ['video'],
+          maxResults: 20, // Fetch a good number of related videos
+        });
+  
+        const videos = response.data.items ?? [];
+        const titles = videos.map(video => video.snippet?.title).filter(Boolean) as string[];
+        const tags = videos.flatMap(video => video.snippet?.tags ?? []);
+        
+        // Combine topic with titles and tags to create a rich set of keywords
+        const combinedKeywords = [
+            topic, 
+            ...titles.map(title => title.toLowerCase()), 
+            ...tags.map(tag => tag.toLowerCase())
+        ];
+
+        // Basic keyword extraction (could be improved with NLP)
+        const keywordSet = new Set<string>();
+        combinedKeywords.forEach(text => {
+            // Split by common delimiters and filter out short words
+            const words = text.split(/[\s,.\-'"()#&|]+/).filter(word => word.length > 3);
+            words.forEach(word => keywordSet.add(word));
+        });
+
+        // Add some long-tail variations based on the topic
+        keywordSet.add(`${topic} tutorial`);
+        keywordSet.add(`how to use ${topic}`);
+        keywordSet.add(`best ${topic} for beginners`);
+        keywordSet.add(`${topic} vs`);
+
+        const allSuggestions = Array.from(keywordSet);
+        
+        // Let's also get direct search predictions
+        const searchPredictionsResponse = await youtube.search.list({
+            part: ['snippet'],
+            q: topic,
+            type: ['video'], // Must specify a type
+            maxResults: 5,
+        });
+
+        const suggestions: string[] = [];
+        if (searchPredictionsResponse.data.items) {
+             searchPredictionsResponse.data.items.forEach(item => {
+                if(item.snippet?.title) {
+                    suggestions.push(item.snippet.title);
+                }
+            });
+        }
+
+
+        // Combine everything and get unique results
+        const finalSuggestions = Array.from(new Set([...allSuggestions, ...suggestions]));
+        
+        return finalSuggestions.slice(0, 50); // Return a healthy list for the AI to analyze
+
+      } catch (error: any) {
+        console.error('Error fetching keyword suggestions from YouTube API:', error);
+        const detail = getApiErrorMessage(error);
+        throw new Error(`An error occurred while fetching keyword suggestions from the YouTube API: ${detail}`);
+      }
+    }
+  );
