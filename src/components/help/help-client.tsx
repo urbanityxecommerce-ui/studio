@@ -14,15 +14,15 @@ export default function HelpClient() {
   const faqs = [
     {
       question: "What is the Content Ideas feature for?",
-      answer: "This is your personal brainstorming partner! Just tell it a topic, who you're trying to reach, and the style you want, and it will generate 5 complete video/content ideas for you, including catchy titles, viral hooks, and even thumbnail concepts.",
+      answer: "This is your personal brainstorming partner! Just tell it a topic, who you're trying to reach, and the style you want, and it will generate 5 complete video/content ideas for you, including catchy titles, viral hooks, and even thumbnail concepts. It's perfect for overcoming creative blocks.",
     },
     {
         question: "How does Keyword Research work?",
-        answer: "Enter any topic, and the AI will provide you with a list of 10 related keywords. It also gives you an estimate of how many people search for that keyword each month and how difficult it might be to rank for, helping you choose the best keywords to target."
+        answer: "Enter any topic, and the AI will provide you with a list of 10 related keywords. It also gives you an estimate of how many people search for that keyword each month and how difficult it might be to rank for, helping you choose the best keywords to target for maximum visibility."
     },
     {
       question: "What do I need for the Competitor Analysis feature?",
-      answer: "You'll need a link to a competitor's YouTube channel or one of their specific videos. The tool will then analyze their content to show you their top videos, common headline patterns, and suggest ways you can create better content to compete.",
+      answer: "You'll need a link to a competitor's YouTube channel or one of their specific videos. The tool will then analyze their content to show you their top videos, common headline patterns, and suggest ways you can create better content to compete. Make sure you have a valid YouTube API Key in Settings for this to work.",
     },
     {
       question: "How does the Thumbnail Optimizer work?",
@@ -34,11 +34,15 @@ export default function HelpClient() {
     },
     {
         question: "Why do I get an error when using Competitor Analysis?",
-        answer: "The Competitor Analysis feature requires a YouTube Data API key. If you see an error, it's likely because the key is missing or invalid. Please go to the Settings page, get a free key from the Google Cloud Console (there's a link there to help you), and enter it into the API key field."
+        answer: "The Competitor Analysis feature requires a YouTube Data API key. If you see an error, it's likely because the key is missing, invalid, or hasn't been set up correctly in your server environment. Please go to the Settings page, get a free key from the Google Cloud Console (there's a link there to help you), and enter it into both the API key field in the app and as a 'YOUTUBE_API_KEY' secret for your project."
     },
     {
       question: "Where can I suggest a new feature or report a problem?",
       answer: "We'd love to hear from you! Please use the 'Feedback' page, accessible from the bottom of the sidebar navigation, to send us your ideas or report any issues. Your feedback is crucial for making the app better.",
+    },
+     {
+      question: "How do I change my password?",
+      answer: "You can change your password from the 'Settings' page. Under the 'Security' section, click the 'Change Password' button. A password reset link will be sent to your registered email address.",
     }
   ];
 
