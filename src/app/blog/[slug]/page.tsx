@@ -1,9 +1,10 @@
 
-import AppLayout from '@/components/layout/app-layout';
 import BlogPostClient from '@/components/blog/blog-post-client';
 import { placeholderBlogPosts } from '@/lib/placeholder-blog';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { Navbar } from '@/components/layout/navbar';
+import { Footer } from '@/components/layout/footer';
 
 // This function tells Next.js which blog post pages to build at build time.
 export async function generateStaticParams() {
@@ -73,13 +74,17 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
   // Pass the post data to the client component for rendering.
   return (
-    <AppLayout>
-      {/* Add JSON-LD to the head of the page */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <BlogPostClient post={post} />
-    </AppLayout>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main className="flex-1 container py-8">
+        {/* Add JSON-LD to the head of the page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <BlogPostClient post={post} />
+      </main>
+      <Footer />
+    </div>
   );
 }
