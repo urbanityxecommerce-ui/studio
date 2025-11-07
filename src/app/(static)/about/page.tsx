@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Users, Target, Rocket } from "lucide-react";
@@ -65,11 +66,11 @@ export default function AboutUsPage() {
           <h2 className="text-3xl font-bold tracking-tight">Meet the Founder</h2>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Avatar className="h-32 w-32">
-              <AvatarImage src="https://images.unsplash.com/photo-1557862921-37829c790f19?q=80&w=200&auto=format&fit=crop" alt="Founder" />
-              <AvatarFallback>CX</AvatarFallback>
+              <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" alt="Sucharita Mukhopadhayay" />
+              <AvatarFallback>SM</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-xl font-semibold">Alex Doe</h3>
+              <h3 className="text-xl font-semibold">Sucharita Mukhopadhayay</h3>
               <p className="text-primary">Founder & CEO</p>
               <p className="mt-2 max-w-xl text-muted-foreground">
                 "As a former YouTuber, I experienced the frustration of pouring my heart into content only to see it get buried. I built CreatorX SEO to give creators like me the strategic edge I never had. Our goal is to level the playing field."
