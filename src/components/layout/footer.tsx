@@ -50,9 +50,9 @@ export function Footer() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Legal</h3>
+                  <h3 className="font-semibold">Company</h3>
                   <ul className="mt-4 space-y-2 text-sm">
-                    {footerLinks.slice(2).map(link => (
+                    {footerLinks.map(link => (
                       <li key={link.href}><Link href={link.href} className="text-muted-foreground hover:text-primary">{link.label}</Link></li>
                     ))}
                   </ul>
@@ -64,7 +64,7 @@ export function Footer() {
              <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-between">
                 <p className="text-sm text-muted-foreground">&copy; {year} CreatorX SEO. All rights reserved.</p>
                  <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                    {footerLinks.slice(0, 2).map(link => (
+                    {footerLinks.map(link => (
                         <Link key={link.href} href={link.href} className="text-sm text-muted-foreground hover:text-primary">
                             {link.label}
                         </Link>
