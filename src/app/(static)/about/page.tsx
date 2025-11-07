@@ -17,12 +17,12 @@ export default function AboutUsPage() {
 
         <div className="relative">
           <Image 
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&h=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Team of creators collaborating"
+            src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&h=500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Team of creators collaborating on a whiteboard"
             width={1200}
             height={500}
             className="w-full rounded-lg object-cover"
-            data-ai-hint="team collaboration"
+            data-ai-hint="team strategy"
           />
         </div>
 
@@ -66,7 +66,7 @@ export default function AboutUsPage() {
           <h2 className="text-3xl font-bold tracking-tight">Meet the Founder</h2>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Avatar className="h-32 w-32">
-              <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" alt="Sucharita Mukhopadhayay" />
+              <AvatarImage src="https://images.unsplash.com/photo-1580894732444-84cf70b6e582?q=80&w=200&auto=format&fit=crop" alt="Sucharita Mukhopadhayay" />
               <AvatarFallback>SM</AvatarFallback>
             </Avatar>
             <div>
