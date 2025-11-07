@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -48,6 +47,7 @@ import ClientOnly from "../client-only";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { doc } from "firebase/firestore";
+import { Footer } from "./footer";
 
 const navItems = [
   { href: "/", label: "Content Ideas", icon: Lightbulb },
@@ -135,134 +135,139 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <ClientOnly>
-      <Sidebar variant="sidebar" collapsible="icon">
-        <SidebarHeader className="h-16 items-center justify-center gap-2 border-b border-sidebar-border px-3 text-lg font-semibold text-sidebar-foreground">
-          <Logo />
-          <span className="duration-200 group-data-[collapsible=icon]:-translate-x-4 group-data-[collapsible=icon]:opacity-0">
-            CreatorX SEO
-          </span>
-        </SidebarHeader>
+      <div className="flex min-h-screen flex-col">
+        <div className="flex flex-1">
+          <Sidebar variant="sidebar" collapsible="icon">
+            <SidebarHeader className="h-16 items-center justify-center gap-2 border-b border-sidebar-border px-3 text-lg font-semibold text-sidebar-foreground">
+              <Logo />
+              <span className="duration-200 group-data-[collapsible=icon]:-translate-x-4 group-data-[collapsible=icon]:opacity-0">
+                CreatorX SEO
+              </span>
+            </SidebarHeader>
 
-        <SidebarContent className="flex-1 p-2">
-          <div className="p-2 group-data-[collapsible=icon]:p-0">
-            <Button asChild size="sm" className="w-full">
-              <Link href="/upgrade">
-                <Zap className="mr-2 h-4 w-4" />
-                <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
-              </Link>
-            </Button>
-          </div>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive(item.href)}
-                  tooltip={{ children: item.label }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
+            <SidebarContent className="flex-1 p-2">
+              <div className="p-2 group-data-[collapsible=icon]:p-0">
+                <Button asChild size="sm" className="w-full">
+                  <Link href="/upgrade">
+                    <Zap className="mr-2 h-4 w-4" />
+                    <span className="duration-200 group-data-[collapsible=icon]:opacity-0">Upgrade</span>
                   </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
+                </Button>
+              </div>
+              <SidebarMenu>
+                {navItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.href)}
+                      tooltip={{ children: item.label }}
+                    >
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarContent>
 
-        <SidebarContent className="p-2">
-           <SidebarMenu>
-            {isAdmin && (
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive('/admin')} tooltip={{ children: 'Admin Panel' }}>
-                  <Link href="/admin">
-                    <Shield />
-                    <span>Admin Panel</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
-            {bottomNavItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={{ children: item.label }}>
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-             <SidebarMenuItem>
+            <SidebarContent className="p-2">
+              <SidebarMenu>
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={isActive('/admin')} tooltip={{ children: 'Admin Panel' }}>
+                      <Link href="/admin">
+                        <Shield />
+                        <span>Admin Panel</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                {bottomNavItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={{ children: item.label }}>
+                        <Link href={item.href}>
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+                <SidebarMenuItem>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton tooltip={{children: "User Profile"}} asChild={false}>
+                            <UserAvatar />
+                            <span>User Profile</span>
+                        </SidebarMenuButton>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="mb-2 w-56">
+                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="flex justify-between">
+                            <span>Profile</span>
+                            <PlanBadge />
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>Billing</DropdownMenuItem>
+                          <DropdownMenuItem>Team</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Log out</span>
+                          </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset>
+            <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
+              <SidebarTrigger className="md:hidden" />
+              <div className="flex-1" />
+              <div className="flex items-center gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                     <SidebarMenuButton tooltip={{children: "User Profile"}} asChild={false}>
-                        <UserAvatar />
-                        <span>User Profile</span>
-                    </SidebarMenuButton>
+                    <button className="h-8 w-8 rounded-full outline-none ring-ring ring-offset-2 ring-offset-background focus-visible:ring-2">
+                      <UserAvatar />
+                    </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="mb-2 w-56">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="flex justify-between">
-                        <span>Profile</span>
-                        <PlanBadge />
-                      </DropdownMenuItem>
-                       <DropdownMenuItem>Billing</DropdownMenuItem>
-                      <DropdownMenuItem>Team</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                      </DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span>{user?.displayName || "User"}</span>
+                        <span className="text-xs font-normal text-muted-foreground">{user?.email}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex justify-between">
+                      <Link href="/settings" className="flex items-center">
+                        <Settings className="mr-2" />
+                        <span>Settings</span>
+                      </Link>
+                      <PlanBadge />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/upgrade">
+                        <Zap className="mr-2" />
+                        <span>Upgrade</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                      <LogOut className="mr-2" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-             </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
-          <SidebarTrigger className="md:hidden" />
-          <div className="flex-1" />
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="h-8 w-8 rounded-full outline-none ring-ring ring-offset-2 ring-offset-background focus-visible:ring-2">
-                  <UserAvatar />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col">
-                    <span>{user?.displayName || "User"}</span>
-                    <span className="text-xs font-normal text-muted-foreground">{user?.email}</span>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex justify-between">
-                   <Link href="/settings" className="flex items-center">
-                    <Settings className="mr-2" />
-                    <span>Settings</span>
-                  </Link>
-                   <PlanBadge />
-                </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
-                  <Link href="/upgrade">
-                    <Zap className="mr-2" />
-                    <span>Upgrade</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                  <LogOut className="mr-2" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
-      </SidebarInset>
+              </div>
+            </header>
+            <main className="flex-1 p-4 md:p-6">{children}</main>
+          </SidebarInset>
+        </div>
+        <Footer />
+      </div>
     </ClientOnly>
   );
 }
