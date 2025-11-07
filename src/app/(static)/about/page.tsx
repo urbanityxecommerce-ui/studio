@@ -66,7 +66,7 @@ export default function AboutUsPage() {
           <h2 className="text-3xl font-bold tracking-tight">Meet the Founder</h2>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Avatar className="h-32 w-32">
-              <AvatarImage src="https://images.unsplash.com/photo-1580894732444-84cf70b6e582?q=80&w=200&auto=format&fit=crop" alt="Sucharita Mukhopadhayay" />
+              <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&h=200&auto=format&fit=crop" alt="Sucharita Mukhopadhayay" />
               <AvatarFallback>SM</AvatarFallback>
             </Avatar>
             <div>
