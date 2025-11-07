@@ -54,7 +54,8 @@ export default function ContactPage() {
       });
       form.reset();
     }
-    if (formspreeState.errors.length > 0) {
+    // Check if formspreeState.errors exists and has errors before showing a toast
+    if (formspreeState.errors && formspreeState.errors.length > 0) {
        toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
