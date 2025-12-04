@@ -165,8 +165,8 @@ export default function ContactPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">For direct inquiries, you can reach us at:</p>
-                    <a href="mailto:biznessindia@gmail.com" className="font-semibold text-primary hover:underline">
-                        biznessindia@gmail.com
+                    <a href="mailto:biznessindiapvtltd@gmail.com" className="font-semibold text-primary hover:underline">
+                        biznessindiapvtltd@gmail.com
                     </a>
                 </CardContent>
             </Card>

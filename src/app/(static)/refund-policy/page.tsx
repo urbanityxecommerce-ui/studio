@@ -1,3 +1,4 @@
+
 export default function RefundPolicyPage() {
   return (
     <div className="bg-background">
@@ -50,7 +51,7 @@ export default function RefundPolicyPage() {
             If you have any questions about our Refund Policy or wish to cancel your subscription, please do not hesitate to contact us.
           </p>
           <p>
-            You can reach us through our <a href="/contact">Contact Page</a> or by emailing us directly at <a href="mailto:biznessindia@gmail.com">biznessindia@gmail.com</a>.
+            You can reach us through our <a href="/contact">Contact Page</a> or by emailing us directly at <a href="mailto:biznessindiapvtltd@gmail.com">biznessindiapvtltd@gmail.com</a>.
           </p>
         </div>
       </div>

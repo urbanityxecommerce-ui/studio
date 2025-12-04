@@ -1,3 +1,4 @@
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="bg-background">
@@ -84,7 +85,7 @@ export default function PrivacyPolicyPage() {
 
           <h2>Contact Us</h2>
           <p>
-            If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:biznessindia@gmail.com">biznessindia@gmail.com</a>
+            If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:biznessindiapvtltd@gmail.com">biznessindiapvtltd@gmail.com</a>
           </p>
         </div>
       </div>

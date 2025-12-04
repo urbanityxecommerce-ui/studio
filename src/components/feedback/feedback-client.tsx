@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -34,7 +35,7 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function FeedbackClient() {
   const [feedback, setFeedback] = React.useState("");
   const whatsappNumber = "7478802433";
-  const email = "biznessindia@gmail.com";
+  const email = "biznessindiapvtltd@gmail.com";
 
   const handleWhatsAppSend = () => {
     const message = `*App Feedback:*\n\n${feedback}`;
