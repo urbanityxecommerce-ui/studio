@@ -23,10 +23,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="icon" href="/icons/icon-192x192.png" />
-        <script
-          type="text/javascript"
-          src="//pl28188366.effectivegatecpm.com/b5/b7/58/b5b75802a450a6463e29c0a4734a8f00.js"
-        ></script>
+        <script type='text/javascript' src='//pl28212953.profitablegatecpm.com/a9/01/cd/a901cd8f448d6a85897c32b508f51270.js'></script>
       </head>
       <body className="font-body antialiased">
         <ThemeProvider
